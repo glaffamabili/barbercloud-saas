@@ -1,166 +1,143 @@
-> **Este projeto continua em [github.com/glaffamabili/barbercloud-saas](https://github.com/glaffamabili/barbercloud-saas)**
+# 💈 BarberCloud — Sistema SaaS de Agendamento, Catálogo de Serviços e Gestão para Barbearias & Estúdios de Beleza
 
-# 🎬 Catálogo de Filmes — Tom Hanks
-> **ISW055 · Introdução à Computação em Nuvem**  
-> Professor: [@siriani](https://github.com/siriani) — [github.com/siriani](https://github.com/siriani)  
-> Aplicação em Produção: [https://amabili-flor-isw055.lapps.studio/](https://amabili-flor-isw055.lapps.studio/)  
-> 📘 **Documentação Técnica Reversa Completa (Atividade 8):** [**`DOCUMENTACAO.md`**](./DOCUMENTACAO.md)
-
----
-
-## 📑 Sumário das Implementações
-1. [Classificação da Arquitetura em Nuvem (IaaS, PaaS e SaaS) — Atividade 8](#-1-classificação-da-arquitetura-em-nuvem-iaas-paas-e-saas)
-2. [Documentação Técnica Reversa (`DOCUMENTACAO.md`) — Atividade 8](#-2-documentação-técnica-reversa-documentacaomd)
-3. [Plano Premium com Stripe (Checkout & Webhook) — Atividade 7](#-3-plano-premium-com-stripe-checkout--webhook)
-4. [Documentação Swagger / OpenAPI 3.0](#-4-documentação-swagger--openapi-30)
-5. [CI/CD com GitHub Actions](#-5-cicd-com-github-actions)
-6. [Observabilidade: Health Checks e Métricas Prometheus](#-6-observabilidade-health-checks-e-métricas)
-7. [Controle de Acesso por Papel (RBAC)](#-7-controle-de-acesso-por-papel-rbac)
-8. [Como Executar Localmente](#-8-como-executar-localmente)
+> **ISW055 · Introdução à Computação em Nuvem (2026.2)**  
+> **Professor:** Prof. Allan Lincoln Rodrigues Siriani — [@siriani](https://github.com/siriani) ([github.com/siriani](https://github.com/siriani))  
+> **Aluna:** Amabili Flor (`161_SIST. INTELIGENTES_N`)  
+> **Aplicação em Produção:** [https://amabili-flor-isw055.lapps.studio/](https://amabili-flor-isw055.lapps.studio/)  
+> **Repositório de Origem (P1 — Atividades 1 a 8):** [github.com/glaffamabili/catalogo-tom-hanks](https://github.com/glaffamabili/catalogo-tom-hanks)  
+> **Repositório do Produto SaaS (P2 — Atividades 9 a 11):** [github.com/glaffamabili/barbercloud-saas](https://github.com/glaffamabili/barbercloud-saas)  
+> 📘 **Documentação Técnica Reversa:** [`DOCUMENTACAO.md`](./DOCUMENTACAO.md) | 📄 **Relatório Consolidado P2 (PDF):** [`docs/P2_ISW055_Amabili_Flor.pdf`](./docs/P2_ISW055_Amabili_Flor.pdf)
 
 ---
 
-## ☁️ 1. Classificação da Arquitetura em Nuvem (IaaS, PaaS e SaaS)
+## 🧭 Plano de Negócio do Produto SaaS (Atividade 9)
 
-Na **Atividade 8**, todas as peças que compõem este projeto foram analisadas e classificadas dentro dos três modelos clássicos de serviço em computação em nuvem (**IaaS**, **PaaS** e **SaaS**), considerando a responsabilidade operacional real sobre cada camada:
-
-| Peça / Componente do Projeto | Classificação | Justificativa Técnica (Quem gerencia o quê?) |
-| :--- | :---: | :--- |
-| **Máquina Virtual no Cluster (Proxmox VE / Linux Host)** | **IaaS**<br>*(Infrastructure as a Service)* | O provedor de infraestrutura (cluster LApps / Proxmox) entrega apenas o hardware virtualizado (vCPU, RAM, disco virtual e interface de rede). Toda a gestão do Sistema Operacional Linux, pacotes, rede local, firewall e runtime de containers fica sob nossa responsabilidade. |
-| **Orquestração de Containers (Docker Engine + Portainer)** | **PaaS (Self-Hosted / CaaS)**<br>*(Platform / Container as a Service sobre IaaS)* | Funciona como camada de plataforma intermediária sobre a VM: abstrai o empacotamento e ciclo de vida dos processos (`catalog-service`, `auth-service`, `log-service`) via `docker-compose.yml`, redes virtuais isoladas, healthchecks e variáveis de ambiente. |
-| **Banco de Dados Relacional (`mariadb:10.6` em container)** | **IaaS / Self-Managed em Container**<br>*(Não é DBaaS/PaaS gerenciado)* | Embora forneça um motor de banco de dados, ele **não** é consumido como um PaaS gerenciado (como AWS RDS ou Cloud SQL): nós mesmos gerenciamos o container, o volume persistente (`mysql-data`), a inicialização de schemas e os backups dentro da nossa infraestrutura. |
-| **Mensageria e Streams (`redis:7-alpine` em container)** | **IaaS / Self-Managed em Container** | Assim como o MariaDB, o broker Redis que sustenta o stream `audit_logs` roda em container próprio na nossa VM (`redis-data` com AOF habilitado), exigindo configuração e monitoramento próprios em vez de um serviço gerenciado (como AWS ElastiCache). |
-| **Object Storage S3 (`minio/minio` em container)** | **IaaS / Self-Managed Storage**<br>*(API estilo PaaS S3)* | O código consome o MinIO usando exatamente o SDK e protocolo de um serviço de nuvem (`@aws-sdk/client-s3`), mas a operação física do bucket `perfil-fotos` e do volume `minio-data` ocorre dentro do nosso próprio Docker Compose. |
-| **Provedor de Pagamentos (Stripe Checkout & Webhooks)** | **SaaS / API-as-a-Service (BaaS)**<br>*(Software as a Service)* | Consumido 100% como serviço pronto na nuvem via API HTTPS e painel web pronto. Não gerenciamos servidores, banco de dados, conformidade PCI-DSS nem páginas de captura de cartão: apenas criamos a `Checkout Session` e recebemos o webhook assinado. |
-| **Serviço de E-mail Transacional (Mailtrap / SMTP Externo)** | **SaaS / PaaS de Mensageria** | Consumido como serviço externo gerenciado via protocolo SMTP para entrega e caixa de entrada dos códigos de autenticação de dois fatores (2FA) e links de recuperação de senha, sem necessidade de manter um servidor Postfix próprio. |
-| **API de Metadados de Filmes (TMDB API)** | **SaaS / Data-as-a-Service** | Plataforma externa pronta consumida via REST (`api.themoviedb.org`). Toda a base de dados mundial de filmes, imagens de pôsteres e CDN é mantida integralmente por terceiros. |
-| **GitHub + GitHub Actions (Repositório e CI/CD)** | **SaaS / PaaS de DevOps** | O controle de versão, gestão de Issues e execução dos pipelines de integração e build (`.github/workflows/ci-cd.yml`) rodam em infraestrutura e software inteiramente gerenciados pelo GitHub. |
-| **O Próprio Sistema (`Catálogo Tom Hanks`) para o Usuário Final** | **SaaS**<br>*(Software as a Service)* | Para o usuário final que acessa pelo navegador (`https://amabili-flor-isw055.lapps.studio/`), cria conta, favorita filmes e assina o Plano Premium por R$ 9,90/mês, o sistema é entregue pronto para uso, sem que o cliente precise instalar ou configurar nada. |
+### 1. Nome e Frase do Produto
+**BarberCloud** — *A agenda inteligente na nuvem para barbearias, salões e pet shops que elimina furos de horário, organiza comissões e profissionaliza o atendimento sem cobrar comissão por corte.*
 
 ---
 
-## 📘 2. Documentação Técnica Reversa (`DOCUMENTACAO.md`)
-
-A documentação técnica reversa completa do sistema — escrita como se o projeto estivesse sendo entregue para manutenção por outro desenvolvedor — encontra-se no arquivo dedicado:
-
-👉 **[Acessar `DOCUMENTACAO.md` — Especificação, Arquitetura, Regras de Negócio e Modelo de Dados](./DOCUMENTACAO.md)**
-
-O documento contempla:
-1. **Especificação Funcional:** Descrição completa do sistema sob a perspectiva do usuário final e do administrador.
-2. **Arquitetura:** Diagrama completo de todos os microsserviços (`catalog-service`, `auth-service`, `log-service`), bancos (`MariaDB`, `Redis`, `MinIO`) e integrações externas (`Stripe`, `TMDB`, `SMTP`), detalhando o que é público e o que fica isolado na rede interna.
-3. **Regras de Negócio Extraídas do Código:** 17 regras explícitas no formato `"Se X, então Y"` (validação DNS MX, 2FA em 10 min, reset de senha em 30 min, moderação RBAC 403, limite de 5 MB no MinIO, limite de 3 favoritos no plano Free vs. ilimitado no Premium e validação HMAC de webhook do Stripe).
-4. **Modelo de Dados:** Diagrama Entidade-Relacionamento (DER) e tabelas detalhadas do MariaDB, além da estrutura do stream `audit_logs` no Redis e das chaves S3 no MinIO.
+### 2. A Dor (O Problema Real de Mercado)
+Mais de 80% das micro e pequenas barbearias, estúdios de estética e banho & tosa de bairro no Brasil ainda gerenciam sua operação inteira pelo **WhatsApp misturado com conversas pessoais** ou em **cadernos de papel no balcão**. Isso gera quatro dores financeiras e operacionais graves todos os dias:
+1. **Tempo perdido respondendo mensagens repetitivas:** O barbeiro precisa parar o atendimento com a tesoura ou máquina na mão para responder *"Tem horário hoje às 18h?"* ou *"Quanto custa o corte + barba?"*.
+2. **Conflitos de agenda e "No-Show" (Furos de Horário):** Duplo agendamento no mesmo horário por erro manual e clientes que esquecem do horário marcado ou não enviam comprovante de sinal/PIX, deixando a cadeira vazia (prejuízo médio de 15% a 25% do faturamento semanal).
+3. **Falta de vitrine visual e histórico por cliente:** O cliente não consegue ver fotos reais dos cortes/serviços realizados, a duração exata de cada procedimento nem o histórico de atendimentos e avaliações.
+4. **Sistemas tradicionais caros ou predatórios:** Plataformas grandes cobram mensalidades altas por profissional cadastrado ou retêm taxas abusivas sobre cada agendamento online.
 
 ---
 
-## 💳 3. Plano Premium com Stripe (Checkout & Webhook)
-
-Implementado na **Atividade 7**, o sistema conta com monetização em **Modo de Teste do Stripe**:
-- **Plano Premium (R$ 9,90/mês):** Criado em modo de teste, sem armazenar nenhum dado sensível de cartão (número, CVV ou validade) no banco da aplicação.
-- **Endpoint de Checkout (`POST /api/checkout/create-session`):** Cria uma sessão de checkout para o usuário logado e redireciona para a página hospedada de pagamento.
-- **Endpoint de Webhook (`POST /api/webhooks/stripe`):** Recebe de forma assíncrona o evento `checkout.session.completed`, valida criptograficamente o header `Stripe-Signature` (HMAC-SHA256) e atualiza o usuário para `premium = TRUE` no MariaDB.
-- **Benefício Real Verificável:** Usuários comuns possuem limite de até **3 filmes favoritos** (`HTTP 403 PREMIUM_REQUIRED` ao tentar adicionar o 4º filme). Usuários **Premium** possuem **favoritos ilimitados** e exibem o selo exclusivo `👑 PREMIUM` no cabeçalho e no perfil.
+### 3. Persona (Cliente Ideal)
+- **Nome e Perfil:** **Lucas Almeida (29 anos)**, barbeiro-proprietário da *"Barbearia Dom Lucas"*, localizada em um bairro comercial de médio porte em Sorocaba/SP.
+- **Rotina e Contexto:** Trabalha com mais 2 barbeiros parceiros, atende em média 18 a 25 clientes por dia (terça a sábado, das 9h às 20h) e recebe cerca de 60 mensagens diárias no WhatsApp.
+- **Frustrações:** Perde de 3 a 4 horários todo sábado por clientes que somem sem avisar; não sabe exatamente quantos cortes cada profissional realizou no mês e acha sistemas como Trinks/Booksy complexos demais para configurar.
+- **O que valoriza:** Um link simples para colocar na bio do Instagram onde o cliente veja os serviços com foto e preço, escolha o horário, anexe o comprovante ou foto de referência e receba confirmação por e-mail com segurança.
 
 ---
 
-## 📄 4. Documentação Swagger / OpenAPI 3.0
+### 4. Concorrentes e Alternativas Atuais
 
-Todos os endpoints dos serviços estão especificados e documentados sob o padrão **OpenAPI 3.0**, permitindo a visualização interativa e execução de chamadas reais com **"Try it out"** direto pelo navegador.
-
-### Links das Interfaces Swagger UI:
-- **Catálogo API (Catalog Service):** [`/apidocs`](https://amabili-flor-isw055.lapps.studio/apidocs) ou [`/docs`](https://amabili-flor-isw055.lapps.studio/docs)
-- **Arquivo da Especificação:** [`catalog-service/openapi.json`](./catalog-service/openapi.json)
-- **Auth Service API:** [`auth-service/openapi.json`](./auth-service/openapi.json) (acessível internamente em `/apidocs`)
-
-### O que está documentado em cada endpoint:
-- **Método HTTP e Rota** (ex: `POST /api/register`, `GET /api/movies`, `DELETE /api/comments/{id}`).
-- **Parâmetros e Corpo da Requisição** com schemas JSON e validações.
-- **Códigos de Resposta:** `200 OK`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden` (RBAC) e `500 Internal Server Error`.
+| Concorrente / Alternativa | Como Funciona Hoje | Limitação / Por que a Persona não fica satisfeita |
+| :--- | :--- | :--- |
+| **1. WhatsApp + Caderno / Google Agenda (Alternativa Manual)** | O cliente manda mensagem, aguarda resposta manual do barbeiro e o horário é anotado no papel ou agenda comum. | Exige atendimento humano constante, gera erros de encaixe, não tem catálogo de preços com fotos nem controle por papel (`cliente` vs `profissional`). |
+| **2. Booksy** | Plataforma global de agendamento para barbearias e salões. | Mensalidade elevada em dólar/real com cobrança adicional por cada membro da equipe e taxas sobre captação de novos clientes. |
+| **3. Trinks / Avec** | ERP completo para grandes salões de beleza e clínicas de estética. | Interface complexa voltada a grandes redes (estoque fiscal, NFSe pesada), custo inicial alto e sem plano gratuito funcional para o barbeiro autônomo começar. |
+| **4. AppBarber / Belasis** | Sistemas nacionais de gestão de barbearias. | Planos de entrada muito restritos, curva de aprendizado longa e falta de transparência em auditoria de eventos e portal simples de autogestão de assinatura. |
 
 ---
 
-## 🤖 5. CI/CD com GitHub Actions
-
-O repositório possui um pipeline automatizado de Integração e Entrega Contínua em [`.github/workflows/ci-cd.yml`](./.github/workflows/ci-cd.yml), acionado a cada `push` ou `pull_request` na branch `main`.
-
-### Etapas do Pipeline:
-1. **CI (Continuous Integration):**
-   - Faz checkout do código e configura Node.js 18.x com cache de dependências.
-   - Executa a suíte de testes automatizados ([`auth-service/test.js`](./auth-service/test.js) e [`catalog-service/test.js`](./catalog-service/test.js)).
-   - Valida a integridade do contrato OpenAPI 3.0, módulos e regras de autorização RBAC.
-2. **CD (Continuous Delivery & Packaging):**
-   - Configura o Docker Buildx.
-   - Gera tags rastreáveis atreladas ao commit SHA (ex: `sha-abc1234`) além da tag `latest`.
-   - Constrói as imagens Docker de `auth-service` e `catalog-service`.
-   - Valida a integridade da stack no `docker compose build`.
-
-### Gestão Segura de Segredos:
-- Nenhuma credencial (senhas de banco de dados, API keys do TMDB, credenciais SMTP) fica gravada no código, YAMLs ou Dockerfiles.
-- As variáveis são injetadas estritamente em tempo de execução através do ambiente do **Portainer** ou **GitHub Secrets**.
+### 5. Proposta de Valor
+O **BarberCloud** entrega **agendamento online em 30 segundos com catálogo visual de serviços em S3 (MinIO), isolamento de agenda por usuário/profissional, autenticação segura em 2 etapas (2FA) e cobrança transparente via Stripe**. Diferente do WhatsApp (que toma tempo do barbeiro) e do Booksy/Trinks (que cobram caro por cadeira), o BarberCloud permite começar grátis imediatamente e escalar para agendamentos e serviços ilimitados por um valor fixo acessível de **R$ 29,90/mês**, sem comissão sobre os serviços prestados.
 
 ---
 
-## 🩺 6. Observabilidade: Health Checks e Métricas
+### 6. Modelo de Receita (Planos e Preços no Stripe)
 
-### Health Checks (`/health` com Liveness & Readiness de Verdade)
-Ambos os microsserviços expõem o endpoint `/health` que realiza testes reais em suas dependências:
-- **`auth-service`:** Testa conectividade ativa executando query no banco MariaDB/MySQL.
-- **`catalog-service`:** Testa a conectividade com o banco MariaDB e a comunicação de rede interna com o `auth-service`.
-- **Status de Resposta:**
-  - `HTTP 200 OK`: Serviço saudável (`"status": "UP"`).
-  - `HTTP 503 Service Unavailable`: Falha em dependência crítica (`"status": "DOWN"`).
+A monetização é baseada em **assinatura recorrente mensal (SaaS Subscription)** processada em modo de teste pelo **Stripe** (`mode: subscription`), com dois planos claros e verificação de limite no backend a cada requisição:
 
-### Monitoramento no Docker (`HEALTHCHECK`)
-Os contêineres possuem `healthcheck` configurado no [`docker-compose.yml`](./docker-compose.yml), permitindo que o Docker e o Portainer reportem o status do contêiner como `(healthy)` automaticamente via `docker ps`:
-```yaml
-healthcheck:
-  test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => { if (r.statusCode !== 200) process.exit(1); })"]
-  interval: 15s
-  timeout: 5s
-  retries: 3
-  start_period: 10s
-```
-
-### Métricas Prometheus (`/metrics`)
-O endpoint `/metrics` expõe métricas em formato padrão consumível pelo **Prometheus**:
-- `http_requests_total{method, path, status}`: Contagem total de requisições por rota e código de status.
-- `http_request_duration_seconds`: Latência média das requisições.
-- `process_uptime_seconds`: Tempo de atividade do processo.
-- `process_resident_memory_bytes` / `process_heap_bytes`: Consumo de memória da aplicação.
+| Recurso / Limite | 🆓 Plano **Free** (`R$ 0,00 / mês`) | 👑 Plano **Pro** (`R$ 29,90 / mês`) |
+| :--- | :--- | :--- |
+| **Público-Alvo** | Barbeiro iniciante ou cliente testando a plataforma | Barbearia / Profissional em operação diária |
+| **Limite de Agendamentos / Serviços Ativos** | **Até 3 registros** (bloqueia o 4º com `HTTP 403 PLAN_LIMIT_REACHED`) | **Ilimitado** (agendamentos e catálogo sem teto) |
+| **Catálogo de Serviços com Fotos (MinIO S3)** | ✅ Incluso (upload até 5 MB por imagem) | ✅ Incluso + Destaque visual no catálogo |
+| **Anexo de Comprovante / Referência no Agendamento** | ✅ Incluso | ✅ Incluso |
+| **Selo e Prioridade na Plataforma** | Conta Padrão (`plano: free`) | Selo verificado `👑 PRO ATIVO` (`plano: pro`) |
+| **Gestão de Assinatura (Stripe Billing Portal)** | Upgrade instantâneo via Stripe Checkout | Troca de plano ou cancelamento a qualquer momento no Portal do Cliente |
 
 ---
 
-## 🔐 7. Controle de Acesso por Papel (RBAC)
-
-O sistema implementa o modelo **RBAC (Role-Based Access Control)** com enforcement centralizado no backend (Padrão A).
-
-| Recurso / Ação | Endpoint / Método | Papel `usuario` | Papel `admin` | Regra de Autorização |
-| :--- | :--- | :---: | :---: | :--- |
-| **Autenticação** | `/api/register`<br>`/api/login`<br>`/api/forgot-password` | ✅ Permitido | ✅ Permitido | Login, cadastro e recuperação de senha. |
-| **Catálogo de Filmes** | `GET /api/movies` | ✅ Permitido | ✅ Permitido | Listagem de filmes via TMDB API. |
-| **Favoritos** | `GET /api/favorites`<br>`POST /api/favorites` | ✅ Até 3 (Free) / Ilimitado (Premium) | ✅ Permitido | Gerenciar filmes favoritos próprios. |
-| **Comentar em Filmes** | `POST /api/comments`<br>`GET /api/comments` | ✅ Permitido | ✅ Permitido | Postar e visualizar comentários da comunidade. |
-| **Excluir Próprio Comentário** | `DELETE /api/comments/:id` | ✅ Permitido | ✅ Permitido | O usuário pode excluir apenas seu próprio comentário. |
-| **Moderação de Comentários** | `DELETE /api/comments/:id` | ❌ **403 Forbidden** | ✅ Permitido | **Ação Exclusiva:** Administrador pode moderar/excluir qualquer comentário. |
-| **Listar Todos os Usuários** | `GET /api/users` | ❌ **403 Forbidden** | ✅ Permitido | **Ação Exclusiva:** Painel restrito a administradores. |
-| **Alterar Papel de Usuário** | `PATCH /api/users/:id/role` | ❌ **403 Forbidden** | ✅ Permitido | **Ação Exclusiva:** Promover/rebaixar papéis no sistema. |
+### 7. Métricas de Sucesso (Metas para 90 Dias)
+Para validar a tração e a sustentabilidade financeira do **BarberCloud** nos primeiros 3 meses de operação, acompanhamos três indicadores-chave (visíveis em tempo real no Painel Admin do sistema):
+1. **Base de Assinantes Pagantes (Plano Pro):** Atingir **30 barbearias/profissionais assinantes ativos** no plano Pro (além de 120 usuários no plano Free, gerando taxa de conversão Free → Pro de **20%**).
+2. **MRR (Monthly Recurring Revenue / Receita Recorrente Mensal):** Alcançar **R$ 897,00 de MRR** (`30 assinantes Pro × R$ 29,90/mês`).
+3. **Retenção Mensal / Churn Rate:** Manter a **retenção líquida acima de 90% ao mês** (Churn mensal inferior a 10%, monitorado diretamente pelos webhooks `customer.subscription.deleted` e `invoice.payment_failed` do Stripe).
 
 ---
 
-## 🚀 8. Como Executar Localmente
+### 8. Lean Canvas — BarberCloud
+
+| Bloco do Lean Canvas | Definição Estratégica do BarberCloud |
+| :--- | :--- |
+| **1. Problema** | • Barbeiros perdem horas no WhatsApp respondendo preços e horários disponíveis.<br>• Furos de agenda (*no-show*) e conflitos de horário anotados em papel.<br>• Sistemas existentes cobram caro por profissional ou exigem implantação complexa. |
+| **2. Segmentos de Clientes** | • **Primário:** Barbearias independentes, barbeiros autônomos, pequenos salões de beleza e pet shops de bairro.<br>• **Secundário:** Clientes finais que desejam agendar horários online 24/7 sem esperar resposta no WhatsApp. |
+| **3. Proposta de Valor Única** | *"Transforme seu WhatsApp caótico em uma vitrine de serviços com fotos e agendamento online em 5 minutos — comece grátis e cresça por R$ 29,90/mês fixos."* |
+| **4. Solução** | • Catálogo público e autenticado de serviços (`corte`, `barba`, `combo`, `estética`) com fotos no MinIO.<br>• Motor de agendamento com status (`agendado`, `confirmado`, `concluido`, `cancelado`) e anexo de comprovante.<br>• Avaliações pós-atendimento e painel de métricas SaaS (MRR, assinantes e auditoria Redis). |
+| **5. Canais** | • Link direto na bio do Instagram e mensagem automática do WhatsApp Business da barbearia.<br>• Landing Page pública do BarberCloud com demonstração ao vivo dos planos.<br>• Parcerias com distribuidoras locais de cosméticos para barbearia. |
+| **6. Fontes de Receita** | • Modelo **Freemium SaaS** com assinatura mensal recorrente via **Stripe**:<br>  - Plano **Free:** R$ 0,00/mês (até 3 agendamentos/serviços).<br>  - Plano **Pro:** R$ 29,90/mês (agendamentos e serviços ilimitados). |
+| **7. Estrutura de Custos** | • Infraestrutura Cloud IaaS/Containers (VM Linux + Docker + MariaDB + Redis + MinIO).<br>• Taxa de processamento do Stripe por transação bem-sucedida.<br>• Serviço de disparo de e-mails transacionais SMTP (2FA e lembretes). |
+| **8. Métricas-Chave** | • **MRR** (Receita Recorrente Mensal em R$).<br>• Número de usuários por plano (`Free` vs `Pro`) e taxa de conversão.<br>• Volume diário de eventos de negócio no Redis Streams (`AGENDAMENTO_CRIADO`, `SERVICO_CRIADO`).<br>• Taxa de cancelamento (*Churn*) via webhook Stripe. |
+| **9. Vantagem Injusta** | • Arquitetura cloud-native enxuta baseada em microsserviços desacoplados, auditoria assíncrona em tempo real via Redis Streams e conformidade PCI nativa via Stripe Checkout + Billing Portal. |
+
+---
+
+## 🔄 Mapa de Reaproveitamento Arquitetural (Do Catálogo de Filmes para o BarberCloud)
+
+Conforme planejado na **Atividade 9** e executado nas **Atividades 10 e 11**, toda a engenharia construída na P1 foi reaproveitada para sustentar o novo domínio de negócio:
+
+| Peça do Projeto Original (`catalogo-tom-hanks`) | O que vira no Produto SaaS (`barbercloud-saas`) |
+| :--- | :--- |
+| **`auth-service` (Cadastro, DNS MX, Login 2FA e Reset de Senha)** | **Central de Identidade Multi-Papel do BarberCloud:** Mantém validação DNS MX, 2FA por e-mail e recuperação de senha, expandindo o controle de papéis para **`cliente`**, **`profissional`** (barbeiro) e **`admin`**, além do ciclo de vida completo de assinatura (`free` vs `pro`). |
+| **`catalog-service` (Listagem TMDB, Favoritos e Comentários)** | **Core Business Service (`barbercloud-service`):** Substitui os filmes do TMDB pelo **CRUD completo de Serviços da Barbearia (`servicos_barbearia`), Agendamentos (`agendamentos`) e Avaliações (`avaliacoes_atendimento`)**, com isolamento por usuário/profissional. |
+| **`mariadb` (Tabelas `usuarios`, `favoritos`, `comentarios`)** | **Banco Relacional do Domínio (`db/001_dominio.sql`):** Mantém `usuarios`, `codigos_autenticacao` e `reset_tokens`, e adiciona as tabelas relacionais com chaves estrangeiras `servicos_barbearia`, `agendamentos`, `avaliacoes_atendimento` e `eventos_stripe_processados` (idempotência). |
+| **`redis` + `log-service` (Stream `audit_logs` via `XREADGROUP`)** | **Barramento de Eventos de Negócio SaaS:** Registra e processa assincronamente eventos reais do domínio: `AGENDAMENTO_CRIADO`, `AGENDAMENTO_ATUALIZADO`, `AGENDAMENTO_CANCELADO`, `SERVICO_CRIADO`, `COMPROVANTE_ENVIADO_MINIO`, `LIMITE_FREE_ATINGIDO_403` e os 4 webhooks do Stripe. |
+| **`minio` (Bucket S3 de Foto de Perfil)** | **Armazenamento S3 de Catálogo e Comprovantes (`barbercloud-midia` + `perfil-fotos`):** Armazena tanto as fotos de avatar quanto as **fotos reais dos cortes/serviços do catálogo e comprovantes de agendamento**, salvando a chave S3 nos registros do domínio. |
+| **`Stripe` (Checkout de pagamento único na Atividade 7)** | **Motor Completo de Assinaturas Recorrentes SaaS (Atividade 11):** Gerencia planos **Free (R$ 0)** e **Pro (R$ 29,90/mês)** com `mode=subscription`, **Portal do Cliente (Billing Portal)** e processamento idempotente dos 4 eventos de ciclo de vida (`checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`). |
+| **Swagger OpenAPI 3.0 + `/health` + `/metrics` + GitHub Actions CI/CD** | **Governança, Observabilidade e Entrega Contínua do SaaS:** Documentação interativa atualizada para as rotas do BarberCloud, healthcheck real das dependências, métricas Prometheus e pipeline automatizado de testes e build Docker. |
+
+---
+
+## 🏗️ Funcionalidades de Domínio e SaaS Implementadas (Atividades 10 e 11)
+
+1. **Migração e Seed SQL (`db/001_dominio.sql`):**
+   - Mais de 3 tabelas de domínio com integridade referencial (`FOREIGN KEY`): `servicos_barbearia`, `agendamentos`, `avaliacoes_atendimento` e `eventos_stripe_processados`.
+2. **CRUD Completo de Domínio + Isolamento Multi-Tenant:**
+   - **Catálogo de Serviços (`/api/servicos`):** Listagem, filtros por categoria, criação, edição e exclusão com upload de foto para o MinIO.
+   - **Agendamentos (`/api/agendamentos`):** Criação de horário vinculado a serviço e profissional, visualização detalhada, edição de horário/status/observações, upload de comprovante/referência no MinIO e cancelamento/exclusão.
+   - **Isolamento Estrito por Usuário (`403 Forbidden`):** Cada cliente visualiza, edita e cancela apenas os seus próprios agendamentos. Tentativas de acessar ou modificar o agendamento de outro usuário pelo `:id` na API retornam `HTTP 403 Forbidden` e geram alerta no Redis Streams.
+3. **RBAC com 3 Papéis de Negócio (`cliente`, `profissional`, `admin`):**
+   - `cliente`: Agenda serviços, envia comprovante, avalia atendimentos concluídos e gerencia sua assinatura. Tentativa de cadastrar ou remover serviços do catálogo retorna `HTTP 403 Forbidden`.
+   - `profissional` (Barbeiro/Especialista): Cadastra e edita seus serviços no catálogo com fotos no MinIO e atualiza o status dos agendamentos atribuídos a ele (`confirmado`, `concluido`).
+   - `admin`: Visão global da operação, gestão de papéis, moderação e **Dashboard SaaS com MRR, contagem de usuários por plano, assinaturas ativas e trilha de eventos do Redis**.
+4. **Ciclo Completo de Assinatura Stripe + Portal do Cliente + Idempotência:**
+   - Limite de 3 agendamentos ativos no **Plano Free**, bloqueando o 4º com `HTTP 403` e CTA de upgrade.
+   - Webhook `POST /api/webhooks/stripe` validando assinatura HMAC e garantindo idempotência na tabela `eventos_stripe_processados` para os 4 eventos exigidos (`checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`).
+   - **Portal do Cliente (`POST /api/billing/portal` / `/billing-portal.html`):** Permite ao usuário trocar de plano ou cancelar imediatamente sua assinatura Pro em modo de teste.
+
+---
+
+## 🚀 Como Executar Localmente
 
 ```bash
-# 1. Clonar o repositório
-git clone https://github.com/glaffamabili/catalogo-tom-hanks.git
-cd catalogo-tom-hanks
+# 1. Clonar o repositório do produto SaaS
+git clone https://github.com/glaffamabili/barbercloud-saas.git
+cd barbercloud-saas
 
-# 2. Executar testes automatizados
+# 2. Executar as suítes de testes automatizados (Auth + BarberCloud SaaS)
 cd auth-service && npm test && cd ../catalog-service && npm test && cd ..
 
-# 3. Subir os serviços com Docker Compose
+# 3. Subir todos os 6 containers com Docker Compose
 docker compose up -d --build
 ```
-- Aplicação Web: `http://localhost:8200`
-- Swagger UI: `http://localhost:8200/apidocs`
-- Health Check: `http://localhost:8200/health`
-- Métricas: `http://localhost:8200/metrics`
+- **Landing Page & Aplicação SaaS:** `http://localhost:8200`
+- **Swagger UI (OpenAPI 3.0):** `http://localhost:8200/apidocs`
+- **Health Check:** `http://localhost:8200/health`
+- **Métricas Prometheus:** `http://localhost:8200/metrics`
