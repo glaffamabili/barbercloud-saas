@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="440" viewBox="0 0 940 440">
+  <rect width="940" height="440" rx="12" fill="#0b0f19" stroke="#263352" stroke-width="2"/>
+  <text x="470" y="34" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="16" font-weight="bold">Modelo Entidade-Relacionamento (DER) — BarberCloud SaaS (db/001_dominio.sql)</text>
+
+  <!-- Tabela usuarios -->
+  <rect x="30" y="60" width="265" height="230" rx="8" fill="#151d30" stroke="#3b82f6" stroke-width="2"/>
+  <rect x="30" y="60" width="265" height="32" rx="8" fill="#1d4ed8"/>
+  <text x="162" y="81" text-anchor="middle" fill="#ffffff" font-family="monospace" font-size="13" font-weight="bold">usuarios (PK: id)</text>
+  <text x="44" y="112" fill="#f8fafc" font-family="monospace" font-size="11">🔑 id INT AUTO_INCREMENT</text>
+  <text x="44" y="130" fill="#cbd5e1" font-family="monospace" font-size="11">nome, email (UNIQUE), senha_hash</text>
+  <text x="44" y="148" fill="#38bdf8" font-family="monospace" font-size="11">role ('cliente'|'profissional'|'admin')</text>
+  <text x="44" y="166" fill="#fbbf24" font-family="monospace" font-size="11">plano ('free' | 'pro')</text>
+  <text x="44" y="184" fill="#fbbf24" font-family="monospace" font-size="11">assinatura_status ('active'|'past_due'...)</text>
+  <text x="44" y="202" fill="#34d399" font-family="monospace" font-size="11">stripe_customer_id VARCHAR(100)</text>
+  <text x="44" y="220" fill="#34d399" font-family="monospace" font-size="11">stripe_subscription_id VARCHAR(100)</text>
+  <text x="44" y="238" fill="#a7f3d0" font-family="monospace" font-size="11">foto_chave VARCHAR(255) [MinIO S3]</text>
+  <text x="44" y="256" fill="#94a3b8" font-family="monospace" font-size="11">premium_since, criado_em</text>
+
+  <!-- Tabela servicos_barbearia -->
+  <rect x="345" y="60" width="265" height="175" rx="8" fill="#151d30" stroke="#f59e0b" stroke-width="2"/>
+  <rect x="345" y="60" width="265" height="32" rx="8" fill="#b45309"/>
+  <text x="477" y="81" text-anchor="middle" fill="#ffffff" font-family="monospace" font-size="13" font-weight="bold">servicos_barbearia (PK: id)</text>
+  <text x="359" y="112" fill="#f8fafc" font-family="monospace" font-size="11">🔑 id INT AUTO_INCREMENT</text>
+  <text x="359" y="130" fill="#fbbf24" font-family="monospace" font-size="11">🔗 profissional_id FK → usuarios.id</text>
+  <text x="359" y="148" fill="#cbd5e1" font-family="monospace" font-size="11">nome, categoria, descricao</text>
+  <text x="359" y="166" fill="#cbd5e1" font-family="monospace" font-size="11">preco DECIMAL(10,2), duracao_min</text>
+  <text x="359" y="184" fill="#34d399" font-family="monospace" font-size="11">foto_chave VARCHAR(255) [MinIO S3]</text>
+  <text x="359" y="202" fill="#94a3b8" font-family="monospace" font-size="11">ativo BOOLEAN, criado_em</text>
+
+  <!-- Tabela agendamentos -->
+  <rect x="345" y="255" width="265" height="165" rx="8" fill="#151d30" stroke="#10b981" stroke-width="2"/>
+  <rect x="345" y="255" width="265" height="32" rx="8" fill="#047857"/>
+  <text x="477" y="276" text-anchor="middle" fill="#ffffff" font-family="monospace" font-size="13" font-weight="bold">agendamentos (PK: id)</text>
+  <text x="359" y="305" fill="#f8fafc" font-family="monospace" font-size="11">🔑 id INT AUTO_INCREMENT</text>
+  <text x="359" y="323" fill="#38bdf8" font-family="monospace" font-size="11">🔗 cliente_id FK → usuarios.id</text>
+  <text x="359" y="341" fill="#38bdf8" font-family="monospace" font-size="11">🔗 profissional_id FK → usuarios.id</text>
+  <text x="359" y="359" fill="#fbbf24" font-family="monospace" font-size="11">🔗 servico_id FK → servicos_barbearia.id</text>
+  <text x="359" y="377" fill="#cbd5e1" font-family="monospace" font-size="11">data_hora, status, valor_cobrado</text>
+  <text x="359" y="395" fill="#34d399" font-family="monospace" font-size="11">comprovante_chave [MinIO S3]</text>
+
+  <!-- Tabela avaliacoes_atendimento -->
+  <rect x="655" y="60" width="255" height="155" rx="8" fill="#151d30" stroke="#a855f7" stroke-width="2"/>
+  <rect x="655" y="60" width="255" height="32" rx="8" fill="#7e22ce"/>
+  <text x="782" y="81" text-anchor="middle" fill="#ffffff" font-family="monospace" font-size="12" font-weight="bold">avaliacoes_atendimento</text>
+  <text x="669" y="112" fill="#f8fafc" font-family="monospace" font-size="11">🔑 id INT AUTO_INCREMENT</text>
+  <text x="669" y="130" fill="#34d399" font-family="monospace" font-size="11">🔗 agendamento_id FK → agendamentos</text>
+  <text x="669" y="148" fill="#38bdf8" font-family="monospace" font-size="11">🔗 cliente_id FK → usuarios.id</text>
+  <text x="669" y="166" fill="#cbd5e1" font-family="monospace" font-size="11">nota INT (1..5), comentario TEXT</text>
+  <text x="669" y="184" fill="#94a3b8" font-family="monospace" font-size="11">criado_em TIMESTAMP</text>
+
+  <!-- Tabela eventos_stripe_processados -->
+  <rect x="655" y="255" width="255" height="155" rx="8" fill="#151d30" stroke="#ec4899" stroke-width="2"/>
+  <rect x="655" y="255" width="255" height="32" rx="8" fill="#be185d"/>
+  <text x="782" y="276" text-anchor="middle" fill="#ffffff" font-family="monospace" font-size="12" font-weight="bold">eventos_stripe_processados</text>
+  <text x="669" y="307" fill="#f8fafc" font-family="monospace" font-size="11">🔑 id INT AUTO_INCREMENT</text>
+  <text x="669" y="325" fill="#f472b6" font-family="monospace" font-size="11">⚡ event_id VARCHAR(120) UNIQUE</text>
+  <text x="669" y="343" fill="#cbd5e1" font-family="monospace" font-size="11">event_type VARCHAR(80)</text>
+  <text x="669" y="361" fill="#cbd5e1" font-family="monospace" font-size="11">usuario_id INT, payload_resumo</text>
+  <text x="669" y="379" fill="#94a3b8" font-family="monospace" font-size="11">processado_em (Idempotência)</text>
+
+  <!-- Linhas de relacionamento -->
+  <line x1="295" y1="130" x2="345" y2="130" stroke="#fbbf24" stroke-width="2"/>
+  <line x1="295" y1="260" x2="345" y2="325" stroke="#38bdf8" stroke-width="2"/>
+  <line x1="477" y1="235" x2="477" y2="255" stroke="#10b981" stroke-width="2"/>
+  <line x1="610" y1="310" x2="655" y2="135" stroke="#a855f7" stroke-width="2"/>
+</svg>

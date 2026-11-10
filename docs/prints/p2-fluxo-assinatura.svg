@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="430" viewBox="0 0 940 430">
+  <rect width="940" height="430" rx="12" fill="#0b0f19" stroke="#263352" stroke-width="2"/>
+  <text x="470" y="34" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="16" font-weight="bold">Fluxo de Assinatura Recorrente, Webhooks Assinados (HMAC) e Idempotência — BarberCloud SaaS</text>
+
+  <!-- 5 Etapas Horizontais -->
+  <rect x="28" y="65" width="164" height="145" rx="10" fill="#151d30" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="110" y="92" text-anchor="middle" fill="#fbbf24" font-family="sans-serif" font-size="13" font-weight="bold">1. Clique em Assinar</text>
+  <text x="110" y="116" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="11">Usuário Free clica em</text>
+  <text x="110" y="133" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="11">"Assinar Pro R$ 29,90"</text>
+  <text x="110" y="156" text-anchor="middle" fill="#38bdf8" font-family="monospace" font-size="10">POST /api/subscriptions</text>
+  <text x="110" y="172" text-anchor="middle" fill="#38bdf8" font-family="monospace" font-size="10">/checkout</text>
+
+  <rect x="212" y="65" width="164" height="145" rx="10" fill="#1e1b4b" stroke="#818cf8" stroke-width="1.5"/>
+  <text x="294" y="92" text-anchor="middle" fill="#a5b4fc" font-family="sans-serif" font-size="13" font-weight="bold">2. Stripe Checkout</text>
+  <text x="294" y="116" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="11">mode = subscription</text>
+  <text x="294" y="136" text-anchor="middle" fill="#cbd5e1" font-family="sans-serif" font-size="11">Cartão de teste 4242</text>
+  <text x="294" y="156" text-anchor="middle" fill="#34d399" font-family="sans-serif" font-size="10" font-weight="bold">Zero dado de cartão</text>
+  <text x="294" y="172" text-anchor="middle" fill="#34d399" font-family="sans-serif" font-size="10" font-weight="bold">no nosso backend</text>
+
+  <rect x="396" y="65" width="164" height="145" rx="10" fill="#151d30" stroke="#10b981" stroke-width="1.5"/>
+  <text x="478" y="92" text-anchor="middle" fill="#34d399" font-family="sans-serif" font-size="13" font-weight="bold">3. Webhook + HMAC</text>
+  <text x="478" y="114" text-anchor="middle" fill="#f8fafc" font-family="monospace" font-size="10">POST /api/webhooks/stripe</text>
+  <text x="478" y="134" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="11">Valida Stripe-Signature</text>
+  <text x="478" y="154" text-anchor="middle" fill="#fbbf24" font-family="sans-serif" font-size="10" font-weight="bold">Checa event_id UNIQUE</text>
+  <text x="478" y="170" text-anchor="middle" fill="#fbbf24" font-family="sans-serif" font-size="10">(Idempotência SQL)</text>
+
+  <rect x="580" y="65" width="164" height="145" rx="10" fill="#151d30" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="662" y="92" text-anchor="middle" fill="#60a5fa" font-family="sans-serif" font-size="13" font-weight="bold">4. Atualiza Banco</text>
+  <text x="662" y="116" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="11">MariaDB (usuarios):</text>
+  <text x="662" y="136" text-anchor="middle" fill="#34d399" font-family="monospace" font-size="10">plano = 'pro'</text>
+  <text x="662" y="152" text-anchor="middle" fill="#34d399" font-family="monospace" font-size="10">status = 'active'</text>
+  <text x="662" y="172" text-anchor="middle" fill="#c084fc" font-family="sans-serif" font-size="10">+ Log no Redis Streams</text>
+
+  <rect x="764" y="65" width="148" height="145" rx="10" fill="#151d30" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="838" y="92" text-anchor="middle" fill="#fbbf24" font-family="sans-serif" font-size="13" font-weight="bold">5. Limite &amp; Portal</text>
+  <text x="838" y="116" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="11">Libera agendamentos</text>
+  <text x="838" y="134" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="11">ilimitados na API e</text>
+  <text x="838" y="154" text-anchor="middle" fill="#38bdf8" font-family="sans-serif" font-size="10">Billing Portal p/ troca</text>
+  <text x="838" y="170" text-anchor="middle" fill="#38bdf8" font-family="sans-serif" font-size="10">ou cancelamento</text>
+
+  <!-- Matriz dos 4 Eventos de Ciclo de Vida -->
+  <rect x="28" y="235" width="884" height="170" rx="10" fill="#111827" stroke="#334155" stroke-width="1.5"/>
+  <text x="470" y="262" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="14" font-weight="bold">4 Eventos de Ciclo de Vida Tratados pelo Webhook (/api/webhooks/stripe)</text>
+
+  <rect x="46" y="280" width="202" height="105" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+  <text x="147" y="302" text-anchor="middle" fill="#34d399" font-family="monospace" font-size="10" font-weight="bold">checkout.session.completed</text>
+  <text x="147" y="326" text-anchor="middle" fill="#cbd5e1" font-family="sans-serif" font-size="11">Ativa plano = 'pro'</text>
+  <text x="147" y="344" text-anchor="middle" fill="#cbd5e1" font-family="sans-serif" font-size="11">assinatura_status = 'active'</text>
+  <text x="147" y="366" text-anchor="middle" fill="#38bdf8" font-family="sans-serif" font-size="10">Salva cus_id e sub_id</text>
+
+  <rect x="261" y="280" width="202" height="105" rx="8" fill="#0f172a" stroke="#3b82f6" stroke-width="1"/>
+  <text x="362" y="302" text-anchor="middle" fill="#60a5fa" font-family="monospace" font-size="10" font-weight="bold">customer.subscription.updated</text>
+  <text x="362" y="326" text-anchor="middle" fill="#cbd5e1" font-family="sans-serif" font-size="11">Sincroniza troca de plano</text>
+  <text x="362" y="344" text-anchor="middle" fill="#cbd5e1" font-family="sans-serif" font-size="11">ou renovação mensal</text>
+  <text x="362" y="366" text-anchor="middle" fill="#38bdf8" font-family="sans-serif" font-size="10">Via Billing Portal</text>
+
+  <rect x="476" y="280" width="202" height="105" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1"/>
+  <text x="577" y="302" text-anchor="middle" fill="#fbbf24" font-family="monospace" font-size="10" font-weight="bold">invoice.payment_failed</text>
+  <text x="577" y="326" text-anchor="middle" fill="#cbd5e1" font-family="sans-serif" font-size="11">Marca status = 'past_due'</text>
+  <text x="577" y="344" text-anchor="middle" fill="#cbd5e1" font-family="sans-serif" font-size="11">Rebaixa para plano 'free'</text>
+  <text x="577" y="366" text-anchor="middle" fill="#f87171" font-family="sans-serif" font-size="10">Restringe limite p/ 3 itens</text>
+
+  <rect x="691" y="280" width="202" height="105" rx="8" fill="#0f172a" stroke="#ef4444" stroke-width="1"/>
+  <text x="792" y="302" text-anchor="middle" fill="#f87171" font-family="monospace" font-size="10" font-weight="bold">customer.subscription.deleted</text>
+  <text x="792" y="326" text-anchor="middle" fill="#cbd5e1" font-family="sans-serif" font-size="11">Marca status = 'canceled'</text>
+  <text x="792" y="344" text-anchor="middle" fill="#cbd5e1" font-family="sans-serif" font-size="11">Retorna conta p/ 'free'</text>
+  <text x="792" y="366" text-anchor="middle" fill="#f87171" font-family="sans-serif" font-size="10">Cancelamento imediato</text>
+</svg>

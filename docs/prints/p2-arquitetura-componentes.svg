@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="470" viewBox="0 0 940 470">
+  <rect width="940" height="470" rx="12" fill="#0b0f19" stroke="#263352" stroke-width="2"/>
+  <text x="470" y="34" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="17" font-weight="bold">Arquitetura de Microsserviços — BarberCloud SaaS (Produção Docker / Portainer)</text>
+
+  <!-- Camada Externa / Pública -->
+  <rect x="24" y="54" width="230" height="390" rx="10" fill="#111827" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="5,5"/>
+  <text x="139" y="78" text-anchor="middle" fill="#60a5fa" font-family="sans-serif" font-size="13" font-weight="bold">REDE PÚBLICA (INTERNET)</text>
+
+  <rect x="44" y="100" width="190" height="76" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="139" y="128" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="bold">👤 Navegador Cliente</text>
+  <text x="139" y="148" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="11">Landing Page + App SPA</text>
+  <text x="139" y="164" text-anchor="middle" fill="#38bdf8" font-family="monospace" font-size="10">HTTPS :443 / :8200</text>
+
+  <rect x="44" y="206" width="190" height="96" rx="8" fill="#1e1b4b" stroke="#818cf8" stroke-width="1.5"/>
+  <text x="139" y="232" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="bold">💳 Stripe Cloud SaaS</text>
+  <text x="139" y="252" text-anchor="middle" fill="#c7d2fe" font-family="sans-serif" font-size="11">Checkout (mode=subscription)</text>
+  <text x="139" y="268" text-anchor="middle" fill="#c7d2fe" font-family="sans-serif" font-size="11">Customer Billing Portal</text>
+  <text x="139" y="286" text-anchor="middle" fill="#fbbf24" font-family="monospace" font-size="10">Webhooks HMAC-SHA256</text>
+
+  <rect x="44" y="332" width="190" height="86" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+  <text x="139" y="358" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="bold">📧 SMTP / Mailtrap</text>
+  <text x="139" y="378" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="11">Códigos 2FA (6 dígitos)</text>
+  <text x="139" y="396" text-anchor="middle" fill="#34d399" font-family="monospace" font-size="10">Tokens Reset (30 min)</text>
+
+  <!-- Rede Interna Docker -->
+  <rect x="284" y="54" width="632" height="390" rx="10" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="600" y="78" text-anchor="middle" fill="#fbbf24" font-family="sans-serif" font-size="13" font-weight="bold">REDE INTERNA DOCKER (app-network bridge) — VM Linux / Portainer</text>
+
+  <!-- catalog-service -->
+  <rect x="310" y="105" width="250" height="130" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+  <text x="435" y="130" text-anchor="middle" fill="#fbbf24" font-family="sans-serif" font-size="14" font-weight="bold">💈 catalog-service (:3000)</text>
+  <text x="435" y="150" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="11">Único serviço público (:8200)</text>
+  <text x="435" y="170" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="11">• CRUD Serviços e Agendamentos</text>
+  <text x="435" y="188" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="11">• Isolamento Multi-Tenant (403)</text>
+  <text x="435" y="206" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="11">• Limite Free (3) vs Pro + Webhooks</text>
+  <text x="435" y="224" text-anchor="middle" fill="#38bdf8" font-family="monospace" font-size="10">/apidocs • /health • /metrics</text>
+
+  <!-- auth-service -->
+  <rect x="310" y="265" width="250" height="150" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="435" y="290" text-anchor="middle" fill="#60a5fa" font-family="sans-serif" font-size="14" font-weight="bold">🔐 auth-service (:3000)</text>
+  <text x="435" y="310" text-anchor="middle" fill="#f87171" font-family="sans-serif" font-size="10" font-weight="bold">ISOLADO NA REDE INTERNA</text>
+  <text x="435" y="330" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="11">• Cadastro + DNS MX Validation</text>
+  <text x="435" y="348" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="11">• Login 2FA OTP + Hash Bcrypt</text>
+  <text x="435" y="366" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="11">• RBAC: cliente, profissional, admin</text>
+  <text x="435" y="384" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="11">• Estado de Assinatura (free / pro)</text>
+
+  <!-- Camada de Dados -->
+  <rect x="620" y="100" width="270" height="88" rx="8" fill="#172554" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="755" y="125" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="bold">🗄️ MariaDB 10.6 (:3306)</text>
+  <text x="755" y="145" text-anchor="middle" fill="#93c5fd" font-family="monospace" font-size="10">usuarios • servicos_barbearia</text>
+  <text x="755" y="162" text-anchor="middle" fill="#93c5fd" font-family="monospace" font-size="10">agendamentos • avaliacoes</text>
+  <text x="755" y="178" text-anchor="middle" fill="#fbbf24" font-family="monospace" font-size="10">eventos_stripe_processados</text>
+
+  <rect x="620" y="210" width="270" height="96" rx="8" fill="#3b0764" stroke="#c084fc" stroke-width="1.5"/>
+  <text x="755" y="235" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="bold">📋 log-service + ⚡ Redis 7</text>
+  <text x="755" y="255" text-anchor="middle" fill="#e9d5ff" font-family="sans-serif" font-size="11">Redis Streams (XADD / XRANGE)</text>
+  <text x="755" y="273" text-anchor="middle" fill="#d8b4fe" font-family="monospace" font-size="10">AGENDAMENTO_CRIADO • 403</text>
+  <text x="755" y="290" text-anchor="middle" fill="#d8b4fe" font-family="monospace" font-size="10">WEBHOOK_SUBSCRIPTION_*</text>
+
+  <rect x="620" y="328" width="270" height="88" rx="8" fill="#064e3b" stroke="#34d399" stroke-width="1.5"/>
+  <text x="755" y="354" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="bold">🪣 MinIO Object Storage (:9000)</text>
+  <text x="755" y="374" text-anchor="middle" fill="#a7f3d0" font-family="sans-serif" font-size="11">Bucket S3: perfil-fotos</text>
+  <text x="755" y="392" text-anchor="middle" fill="#6ee7b7" font-family="monospace" font-size="10">Fotos de Cortes, Avatares e Comprovantes</text>
+
+  <!-- Setas de comunicação -->
+  <line x1="234" y1="138" x2="310" y2="138" stroke="#38bdf8" stroke-width="2.5"/>
+  <line x1="234" y1="245" x2="310" y2="195" stroke="#818cf8" stroke-width="2.5"/>
+  <line x1="310" y1="365" x2="234" y2="365" stroke="#10b981" stroke-width="2"/>
+  <line x1="435" y1="235" x2="435" y2="265" stroke="#f59e0b" stroke-width="2.5"/>
+  <line x1="560" y1="145" x2="620" y2="145" stroke="#60a5fa" stroke-width="2"/>
+  <line x1="560" y1="185" x2="620" y2="250" stroke="#c084fc" stroke-width="2"/>
+  <line x1="560" y1="215" x2="620" y2="365" stroke="#34d399" stroke-width="2"/>
+  <line x1="560" y1="310" x2="620" y2="165" stroke="#60a5fa" stroke-width="2"/>
+</svg>

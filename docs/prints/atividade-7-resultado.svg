@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="440" viewBox="0 0 900 440">
+  <rect width="900" height="440" rx="10" fill="#0b0f19" stroke="#263352" stroke-width="2"/>
+  <rect width="900" height="40" rx="10" fill="#151d30"/>
+  <circle cx="24" cy="20" r="6" fill="#ff5f56"/><circle cx="44" cy="20" r="6" fill="#ffbd2e"/><circle cx="64" cy="20" r="6" fill="#27c93f"/>
+  <text x="100" y="25" fill="#94a3b8" font-family="sans-serif" font-size="12">https://amabili-flor-isw055.lapps.studio/stripe-checkout.html (Stripe Test Mode)</text>
+
+  <!-- Lado Esquerdo: Checkout Stripe Concluído -->
+  <rect x="28" y="58" width="410" height="356" rx="10" fill="#111827" stroke="#635bff" stroke-width="2"/>
+  <rect x="48" y="78" width="170" height="22" rx="11" fill="#f59e0b"/>
+  <text x="133" y="93" text-anchor="middle" fill="#090d16" font-family="sans-serif" font-size="10" font-weight="bold">STRIPE TEST MODE • 4242</text>
+  <text x="48" y="128" fill="#ffffff" font-family="sans-serif" font-size="18" font-weight="bold">Plano Premium — R$ 9,90/mês</text>
+  <text x="48" y="152" fill="#94a3b8" font-family="sans-serif" font-size="12">Cartão de teste: 4242 •••• •••• 4242 (Val: 12/30)</text>
+  <rect x="48" y="174" width="370" height="78" rx="8" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+  <text x="64" y="200" fill="#34d399" font-family="sans-serif" font-size="13" font-weight="bold">✅ Pagamento de Teste Aprovado!</text>
+  <text x="64" y="220" fill="#a7f3d0" font-family="monospace" font-size="11">Evento: checkout.session.completed</text>
+  <text x="64" y="238" fill="#a7f3d0" font-family="monospace" font-size="11">Stripe-Signature HMAC-SHA256: VALIDADO</text>
+  <text x="48" y="282" fill="#94a3b8" font-family="sans-serif" font-size="11">PCI-DSS: Nenhum número de cartão ou CVV salvo no banco.</text>
+
+  <!-- Lado Direito: Usuário Premium no Banco + Benefício Funcionando -->
+  <rect x="462" y="58" width="410" height="356" rx="10" fill="#151d30" stroke="#f59e0b" stroke-width="2"/>
+  <text x="482" y="92" fill="#fbbf24" font-family="sans-serif" font-size="16" font-weight="bold">👑 Usuário Atualizado após Webhook</text>
+  <rect x="482" y="110" width="370" height="115" rx="8" fill="#0a0e17" stroke="#334155" stroke-width="1"/>
+  <text x="498" y="134" fill="#38bdf8" font-family="monospace" font-size="11">SELECT id, nome, premium, stripe_customer_id</text>
+  <text x="498" y="152" fill="#38bdf8" font-family="monospace" font-size="11">FROM usuarios WHERE id = 1;</text>
+  <text x="498" y="178" fill="#34d399" font-family="monospace" font-size="11">id: 1 | nome: "Amabili Flor" | premium: TRUE (1)</text>
+  <text x="498" y="196" fill="#fbbf24" font-family="monospace" font-size="11">stripe_customer_id: "cus_test_1_9f8a2b"</text>
+  <text x="498" y="214" fill="#fbbf24" font-family="monospace" font-size="11">stripe_subscription_id: "sub_test_1_7c4d1e"</text>
+
+  <rect x="482" y="242" width="370" height="150" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+  <text x="498" y="268" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="bold">Benefício Premium Verificado na Prática:</text>
+  <text x="498" y="292" fill="#cbd5e1" font-family="sans-serif" font-size="12">• Conta Comum: bloqueada no 4º favorito (HTTP 403)</text>
+  <text x="498" y="314" fill="#34d399" font-family="sans-serif" font-size="12" font-weight="bold">• Conta 👑 PREMIUM: Favoritos ILIMITADOS liberados</text>
+  <text x="498" y="336" fill="#34d399" font-family="sans-serif" font-size="12" font-weight="bold">• Selo Dourado 👑 PREMIUM ativo no topo e perfil</text>
+  <text x="498" y="362" fill="#93c5fd" font-family="monospace" font-size="10">Log Redis: STRIPE_WEBHOOK_PAGAMENTO_CONFIRMADO</text>
+</svg>

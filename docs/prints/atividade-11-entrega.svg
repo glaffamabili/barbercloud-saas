@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430">
+    <rect width="900" height="430" rx="10" fill="#0d1117" stroke="#30363d" stroke-width="2"/>
+    <rect width="900" height="42" rx="10" fill="#161b22"/>
+    <circle cx="24" cy="21" r="6" fill="#ff5f56"/>
+    <circle cx="44" cy="21" r="6" fill="#ffbd2e"/>
+    <circle cx="64" cy="21" r="6" fill="#27c93f"/>
+    <rect x="100" y="9" width="760" height="24" rx="6" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+    <text x="118" y="25" fill="#8b949e" font-family="sans-serif" font-size="12">https://github.com/glaffamabili/barbercloud-saas/commit/75c2ced</text>
+
+    <text x="32" y="74" fill="#58a6ff" font-family="sans-serif" font-size="16" font-weight="bold">glaffamabili / barbercloud-saas</text>
+    <rect x="380" y="59" width="60" height="20" rx="10" fill="#1f6feb" fill-opacity="0.2" stroke="#388bfd" stroke-width="1"/>
+    <text x="410" y="73" text-anchor="middle" fill="#58a6ff" font-family="sans-serif" font-size="11" font-weight="bold">Public</text>
+
+    <rect x="32" y="94" width="836" height="306" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+    <text x="54" y="130" fill="#f0f6fc" font-family="sans-serif" font-size="15" font-weight="bold">Issue #8: Entrega — SaaS completo (@siriani) | Planos Free/Pro, 4 Webhooks, Portal e MRR</text>
+
+    <circle cx="68" cy="166" r="14" fill="#238636"/>
+    <text x="68" y="171" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="bold">AF</text>
+    <text x="94" y="164" fill="#c9d1d9" font-family="sans-serif" font-size="13" font-weight="bold">Amabili Flor (glaffamabili)</text>
+    <text x="94" y="181" fill="#8b949e" font-family="sans-serif" font-size="12">Data e hora registradas no GitHub: 10/11/2026 12:14 (BRT)</text>
+
+    <rect x="730" y="150" width="118" height="28" rx="6" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+    <text x="789" y="169" text-anchor="middle" fill="#58a6ff" font-family="monospace" font-size="13" font-weight="bold">75c2ced</text>
+
+    <line x1="54" y1="202" x2="846" y2="202" stroke="#30363d" stroke-width="1"/>
+    <text x="54" y="226" fill="#8b949e" font-family="sans-serif" font-size="12" font-weight="bold">Arquivos e Entregas Verificáveis:</text>
+    
+      <circle cx="64" cy="248" r="3.5" fill="#3fb950"/>
+      <text x="76" y="252" fill="#7ee787" font-family="monospace" font-size="12">catalog-service/server.js (Planos Free R$ 0 máx 3 vs Pro R$ 29,90/mês, 4 webhooks idempotentes e MRR)</text>
+    
+      <circle cx="64" cy="272" r="3.5" fill="#3fb950"/>
+      <text x="76" y="276" fill="#7ee787" font-family="monospace" font-size="12">catalog-service/public/billing-portal.html (Portal do Cliente Stripe para troca e cancelamento)</text>
+    
+      <circle cx="64" cy="296" r="3.5" fill="#3fb950"/>
+      <text x="76" y="300" fill="#7ee787" font-family="monospace" font-size="12">catalog-service/public/stripe-checkout.html (Checkout de assinatura recorrente mode=subscription)</text>
+    
+
+    <rect x="54" y="348" width="792" height="34" rx="6" fill="#0d1117" stroke="#238636" stroke-width="1"/>
+    <text x="70" y="370" fill="#3fb950" font-family="sans-serif" font-size="12" font-weight="bold">✓ Issue #8 aberta em github.com/glaffamabili/barbercloud-saas/issues/8 mencionando @siriani</text>
+  </svg>
