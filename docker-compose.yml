@@ -5,7 +5,7 @@ networks:
     driver: bridge
 
 services:
-  # Servidor Redis para persistência de logs em Redis Streams (Atividade 5)
+  # Servidor Redis para persistência de eventos de negócio em Redis Streams (Atividades 5 e 10)
   redis:
     image: redis:7-alpine
     networks:
@@ -17,7 +17,7 @@ services:
       retries: 3
       start_period: 5s
 
-  # Object Storage MinIO para fotos de perfil dos usuários (Atividade 6)
+  # Object Storage MinIO S3 para fotos de serviços do catálogo, avatares e comprovantes (Atividades 6 e 10)
   minio:
     image: cgr.dev/chainguard/minio:latest
     command: server /data --console-address ":9001"
@@ -27,7 +27,7 @@ services:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin}
 
-  # Microsserviço de Logs e Auditoria (Atividade 5)
+  # Microsserviço de Logs e Auditoria de Negócio (Redis Streams Consumer Group)
   log-service:
     build:
       context: ./log-service
@@ -47,7 +47,7 @@ services:
       redis:
         condition: service_healthy
 
-  # Microsserviço de Autenticação (Atividade 3 / 4)
+  # Microsserviço de Identidade, 2FA, RBAC Multi-Papel e Ciclo de Assinatura (Atividades 3, 4, 10 e 11)
   auth-service:
     build:
       context: ./auth-service
@@ -55,10 +55,10 @@ services:
     networks:
       - app-network
     environment:
-      - DB_HOST=35.226.64.52
-      - DB_USER=IAC_2026_02_amabili_flor
-      - DB_PASSWORD=OLv1YqcvRAjZws
-      - DB_NAME=IAC_2026_02_amabili_flor
+      - DB_HOST=${DB_HOST:-35.226.64.52}
+      - DB_USER=${DB_USER:-IAC_2026_02_amabili_flor}
+      - DB_PASSWORD=${DB_PASSWORD:-OLv1YqcvRAjZws}
+      - DB_NAME=${DB_NAME:-IAC_2026_02_amabili_flor}
       - SMTP_HOST=${SMTP_HOST:-sandbox.smtp.mailtrap.io}
       - SMTP_PORT=${SMTP_PORT:-2525}
       - SMTP_USER=${SMTP_USER}
@@ -73,7 +73,7 @@ services:
       retries: 3
       start_period: 10s
 
-  # Microsserviço Catálogo, Perfil de Usuário e Frontend (Atividades 2, 4, 5 e 6)
+  # Microsserviço Principal BarberCloud SaaS (Catálogo de Serviços, Agendamentos, MinIO e Stripe Subscriptions)
   catalog-service:
     build:
       context: ./catalog-service
@@ -83,23 +83,21 @@ services:
     networks:
       - app-network
     environment:
-      - DB_HOST=35.226.64.52
-      - DB_USER=IAC_2026_02_amabili_flor
-      - DB_PASSWORD=OLv1YqcvRAjZws
-      - DB_NAME=IAC_2026_02_amabili_flor
-      - TMDB_API_KEY=${TMDB_API_KEY}
+      - DB_HOST=${DB_HOST:-35.226.64.52}
+      - DB_USER=${DB_USER:-IAC_2026_02_amabili_flor}
+      - DB_PASSWORD=${DB_PASSWORD:-OLv1YqcvRAjZws}
+      - DB_NAME=${DB_NAME:-IAC_2026_02_amabili_flor}
       - AUTH_SERVICE_URL=http://auth-service:3000
       - LOG_SERVICE_URL=http://log-service:3000
       - MINIO_ENDPOINT=minio
       - MINIO_PORT=9000
       - MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin}
-      - MINIO_BUCKET=perfil-fotos
-      - APP_URL=${APP_URL}
+      - MINIO_BUCKET=${MINIO_BUCKET:-perfil-fotos}
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
-      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
-      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
-      - STRIPE_PRICE_ID=${STRIPE_PRICE_ID}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-whsec_test_barbercloud_saas_secret_2026}
+      - STRIPE_PRO_PRICE_ID=${STRIPE_PRO_PRICE_ID:-price_test_barbercloud_pro_2990_brl}
+      - APP_URL=${APP_URL}
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health?format=json', (r) => { if (r.statusCode !== 200) process.exit(1); })"]
       interval: 15s

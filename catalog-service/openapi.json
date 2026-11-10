@@ -1,415 +1,83 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Catalog Service API — Catálogo & Rede Social Tom Hanks",
-    "description": "API principal do Catálogo e Rede Social de Filmes Tom Hanks com autenticação 2FA, validação de e-mails reais, armazenamento de fotos no MinIO Object Storage, auditoria via Redis Streams e moderação RBAC.",
-    "version": "1.0.0",
-    "contact": {
-      "name": "Tom Hanks Catalog Team",
-      "url": "https://github.com/glaffamabili/catalogo-tom-hanks"
-    }
+    "title": "BarberCloud SaaS — Core Business & Subscriptions API",
+    "version": "2.0.0",
+    "description": "API completa do BarberCloud SaaS: Catálogo de Serviços da Barbearia, CRUD de Agendamentos com Isolamento Multi-Tenant, Avaliações, Upload MinIO S3, Assinaturas Recorrentes Stripe (Free R$ 0 vs Pro R$ 29,90/mês), Portal do Cliente, Webhooks Idempotentes e Painel Admin de Métricas SaaS & MRR."
   },
-  "servers": [
-    {
-      "url": "/",
-      "description": "Servidor da Aplicação"
-    }
-  ],
-  "tags": [
-    { "name": "Autenticação & 2FA", "description": "Endpoints de cadastro com validação de e-mail real, ativação e login com verificação em duas etapas" },
-    { "name": "Perfil Social & MinIO", "description": "Gerenciamento de perfil, biografia e fotos de avatar no Object Storage MinIO" },
-    { "name": "Catálogo de Filmes", "description": "Consulta de filmografia via API The Movie Database (TMDB)" },
-    { "name": "Favoritos", "description": "Gerenciamento de filmes favoritos do usuário" },
-    { "name": "Comentários & Moderação RBAC", "description": "Postagem e moderação comunitária restrita por papel" },
-    { "name": "Administração & Auditoria", "description": "Gerenciamento de usuários e consulta de logs no Redis Streams" },
-    { "name": "Pagamentos & Stripe (Atividade 7)", "description": "Endpoints de Checkout, Webhooks assinados e gestão do Plano Premium via Stripe" },
-    { "name": "Observabilidade", "description": "Health checks de dependências e métricas Prometheus" }
-  ],
   "paths": {
-    "/api/register": {
-      "post": {
-        "tags": ["Autenticação & 2FA"],
-        "summary": "Cadastrar novo usuário com validação de e-mail real e envio de código de ativação",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["nome", "email", "senha"],
-                "properties": {
-                  "nome": { "type": "string", "example": "Amabili Flor" },
-                  "email": { "type": "string", "example": "usuario@gmail.com" },
-                  "senha": { "type": "string", "example": "senha123" },
-                  "role": { "type": "string", "enum": ["usuario", "admin"], "default": "usuario" }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": { "description": "Código de ativação enviado para o e-mail real" },
-          "400": { "description": "E-mail inválido, inexistente ou já em uso" }
-        }
-      }
+    "/api/register": { "post": { "summary": "Cadastro de conta (cliente ou profissional) com DNS MX", "responses": { "200": { "description": "OK" } } } },
+    "/api/verify-email": { "post": { "summary": "Ativação de conta com código de 6 dígitos", "responses": { "200": { "description": "OK" } } } },
+    "/api/login": { "post": { "summary": "Login com envio de código 2FA por e-mail", "responses": { "200": { "description": "OK" } } } },
+    "/api/verify-2fa": { "post": { "summary": "Confirmação do código 2FA e início de sessão", "responses": { "200": { "description": "OK" } } } },
+    "/api/me": { "get": { "summary": "Dados do usuário autenticado, papel e plano ativo", "responses": { "200": { "description": "OK" } } } },
+    "/api/servicos": {
+      "get": { "summary": "Listar catálogo de serviços ativos da barbearia", "responses": { "200": { "description": "Lista de serviços" } } },
+      "post": { "summary": "Cadastrar novo serviço no catálogo (Restrito a profissional ou admin)", "responses": { "201": { "description": "Criado" }, "403": { "description": "Acesso negado para papel cliente" } } }
     },
-    "/api/verify-email": {
-      "post": {
-        "tags": ["Autenticação & 2FA"],
-        "summary": "Ativar conta informando o código de 6 dígitos recebido por e-mail",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["email", "codigo"],
-                "properties": {
-                  "email": { "type": "string", "example": "usuario@gmail.com" },
-                  "codigo": { "type": "string", "example": "123456" }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": { "description": "Conta ativada com sucesso" },
-          "400": { "description": "Código incorreto ou expirado" }
-        }
-      }
+    "/api/servicos/{id}": {
+      "get": { "summary": "Obter detalhes de um serviço", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Detalhe" } } },
+      "put": { "summary": "Editar serviço (Restrito ao profissional responsável ou admin)", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Atualizado" }, "403": { "description": "Forbidden" } } },
+      "delete": { "summary": "Desativar/remover serviço", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Removido" } } }
     },
-    "/api/login": {
-      "post": {
-        "tags": ["Autenticação & 2FA"],
-        "summary": "Iniciar login e solicitar código de verificação em 2 etapas (2FA)",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["email", "senha"],
-                "properties": {
-                  "email": { "type": "string", "example": "usuario@gmail.com" },
-                  "senha": { "type": "string", "example": "senha123" }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": { "description": "Código de 2 etapas enviado para o e-mail" },
-          "401": { "description": "Credenciais inválidas" },
-          "403": { "description": "Conta pendente de ativação" }
-        }
-      }
+    "/api/servicos/{id}/foto": {
+      "post": { "summary": "Upload de foto do serviço/corte para o MinIO S3", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Foto enviada ao MinIO" } } }
     },
-    "/api/verify-2fa": {
-      "post": {
-        "tags": ["Autenticação & 2FA"],
-        "summary": "Confirmar código 2FA e iniciar sessão autenticada",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["email", "codigo"],
-                "properties": {
-                  "email": { "type": "string", "example": "usuario@gmail.com" },
-                  "codigo": { "type": "string", "example": "654321" }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": { "description": "Autenticado com sucesso na sessão" },
-          "400": { "description": "Código 2FA incorreto ou expirado" }
-        }
-      }
+    "/api/agendamentos": {
+      "get": { "summary": "Listar agendamentos (Isolamento Multi-Tenant por usuário)", "responses": { "200": { "description": "Lista isolada por tenant/usuário" } } },
+      "post": { "summary": "Criar novo agendamento (Aplica limite de 3 ativos no Plano Free)", "responses": { "201": { "description": "Agendado" }, "403": { "description": "Limite do Plano Free atingido (PLAN_LIMIT_REACHED)" } } }
     },
-    "/api/resend-code": {
-      "post": {
-        "tags": ["Autenticação & 2FA"],
-        "summary": "Reenviar código de segurança (ativação ou 2FA)",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["email", "tipo"],
-                "properties": {
-                  "email": { "type": "string" },
-                  "tipo": { "type": "string", "enum": ["EMAIL_VERIFICACAO", "LOGIN_2FA"] }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": { "description": "Novo código enviado" }
-        }
-      }
+    "/api/agendamentos/{id}": {
+      "get": { "summary": "Detalhar agendamento (Retorna 403 se pertencer a outro cliente)", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Detalhe" }, "403": { "description": "Isolamento Multi-Tenant violado" } } },
+      "put": { "summary": "Editar horário, observações ou status do agendamento (Isolamento 403)", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Atualizado" }, "403": { "description": "Forbidden" } } },
+      "delete": { "summary": "Cancelar/excluir agendamento (Isolamento 403)", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Cancelado" }, "403": { "description": "Forbidden" } } }
     },
-    "/api/forgot-password": {
-      "post": {
-        "tags": ["Autenticação & 2FA"],
-        "summary": "Solicitar link de recuperação de senha por e-mail",
-        "responses": { "200": { "description": "Link enviado" } }
-      }
+    "/api/agendamentos/{id}/comprovante": {
+      "post": { "summary": "Upload de comprovante/referência no MinIO S3 vinculado ao agendamento", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Comprovante salvo no MinIO" } } }
     },
-    "/api/reset-password": {
-      "post": {
-        "tags": ["Autenticação & 2FA"],
-        "summary": "Redefinir senha com token",
-        "responses": { "200": { "description": "Senha atualizada" } }
-      }
+    "/api/avaliacoes": {
+      "get": { "summary": "Listar avaliações de atendimentos", "responses": { "200": { "description": "Avaliações" } } },
+      "post": { "summary": "Publicar avaliação de atendimento", "responses": { "201": { "description": "Criada" } } }
     },
-    "/api/logout": {
-      "post": {
-        "tags": ["Autenticação & 2FA"],
-        "summary": "Encerrar sessão ativa",
-        "responses": { "200": { "description": "Sessão encerrada" } }
-      }
+    "/api/plans": {
+      "get": { "summary": "Listar planos SaaS (Free R$ 0 vs Pro R$ 29,90/mês)", "responses": { "200": { "description": "Planos" } } }
     },
-    "/api/me": {
-      "get": {
-        "tags": ["Autenticação & 2FA"],
-        "summary": "Consultar dados do usuário autenticado na sessão",
-        "responses": { "200": { "description": "Dados do usuário logado" } }
-      }
+    "/api/subscriptions/checkout": {
+      "post": { "summary": "Criar sessão de assinatura recorrente no Stripe (mode=subscription)", "responses": { "200": { "description": "Sessão criada" } } }
     },
-    "/api/profile": {
-      "get": {
-        "tags": ["Perfil Social & MinIO"],
-        "summary": "Obter perfil social completo do usuário logado com estatísticas",
-        "responses": { "200": { "description": "Perfil com estatísticas, favoritos e foto" } }
-      },
-      "put": {
-        "tags": ["Perfil Social & MinIO"],
-        "summary": "Atualizar biografia e nome de exibição",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "nome": { "type": "string" },
-                  "bio": { "type": "string" }
-                }
-              }
-            }
-          }
-        },
-        "responses": { "200": { "description": "Perfil atualizado com sucesso" } }
-      }
-    },
-    "/api/profile/{id}": {
-      "get": {
-        "tags": ["Perfil Social & MinIO"],
-        "summary": "Consultar perfil público de outro usuário (Sem expor e-mails ou senhas)",
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
-        ],
-        "responses": { "200": { "description": "Dados públicos do usuário" } }
-      }
-    },
-    "/api/profile/upload-photo": {
-      "post": {
-        "tags": ["Perfil Social & MinIO"],
-        "summary": "Upload de foto de perfil para o Object Storage MinIO",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "foto": { "type": "string", "format": "binary" }
-                }
-              }
-            }
-          }
-        },
-        "responses": { "200": { "description": "Foto enviada e armazenada no MinIO com sucesso" } }
-      }
-    },
-    "/api/profile/avatar/{key}": {
-      "get": {
-        "tags": ["Perfil Social & MinIO"],
-        "summary": "Download / Streaming da imagem de avatar armazenada no MinIO",
-        "parameters": [
-          { "name": "key", "in": "path", "required": true, "schema": { "type": "string" } }
-        ],
-        "responses": { "200": { "description": "Arquivo de imagem binária" } }
-      }
-    },
-    "/api/movies": {
-      "get": {
-        "tags": ["Catálogo de Filmes"],
-        "summary": "Listar filmografia de Tom Hanks via TMDB",
-        "responses": { "200": { "description": "Lista de filmes" } }
-      }
-    },
-    "/api/favorites": {
-      "get": {
-        "tags": ["Favoritos"],
-        "summary": "Listar favoritos do usuário",
-        "responses": { "200": { "description": "Lista de favoritos" } }
-      },
-      "post": {
-        "tags": ["Favoritos"],
-        "summary": "Adicionar filme aos favoritos",
-        "responses": { "200": { "description": "Filme favoritado" } }
-      }
-    },
-    "/api/favorites/{tmdbId}": {
-      "delete": {
-        "tags": ["Favoritos"],
-        "summary": "Remover filme dos favoritos",
-        "parameters": [
-          { "name": "tmdbId", "in": "path", "required": true, "schema": { "type": "integer" } }
-        ],
-        "responses": { "200": { "description": "Filme removido" } }
-      }
-    },
-    "/api/comments": {
-      "get": {
-        "tags": ["Comentários & Moderação RBAC"],
-        "summary": "Listar comentários com avatares e autores",
-        "responses": { "200": { "description": "Lista de comentários" } }
-      },
-      "post": {
-        "tags": ["Comentários & Moderação RBAC"],
-        "summary": "Publicar comentário em um filme",
-        "responses": { "200": { "description": "Comentário salvo" } }
-      }
-    },
-    "/api/comments/{id}": {
-      "delete": {
-        "tags": ["Comentários & Moderação RBAC"],
-        "summary": "Excluir comentário (Dono ou Admin para moderação)",
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
-        ],
-        "responses": {
-          "200": { "description": "Comentário excluído" },
-          "403": { "description": "Acesso negado: 403 Forbidden" }
-        }
-      }
-    },
-    "/api/users": {
-      "get": {
-        "tags": ["Administração & Auditoria"],
-        "summary": "Listar usuários cadastrados (Exclusivo Admin)",
-        "responses": { "200": { "description": "Lista de usuários" } }
-      }
-    },
-    "/api/users/{id}/role": {
-      "patch": {
-        "tags": ["Administração & Auditoria"],
-        "summary": "Alterar papel RBAC de usuário (Exclusivo Admin)",
-        "responses": { "200": { "description": "Papel atualizado" } }
-      }
-    },
-    "/api/admin/logs": {
-      "get": {
-        "tags": ["Administração & Auditoria"],
-        "summary": "Consultar logs de auditoria no Redis Streams (Exclusivo Admin)",
-        "responses": { "200": { "description": "Lista de eventos de auditoria" } }
-      }
-    },
-    "/api/premium/checkout": {
-      "post": {
-        "tags": ["Pagamentos & Stripe (Atividade 7)"],
-        "summary": "Criar uma Stripe Checkout Session para o Plano Premium (R$ 9,90/mês)",
-        "responses": {
-          "200": {
-            "description": "Sessão do Stripe criada com sucesso",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "sessionId": { "type": "string" },
-                    "url": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
-          "401": { "description": "Usuário não autenticado" }
-        }
-      }
+    "/api/billing/portal": {
+      "post": { "summary": "Abrir Portal do Cliente (Stripe Billing Portal) para trocar plano ou cancelar", "responses": { "200": { "description": "URL do portal gerada" } } }
     },
     "/api/webhooks/stripe": {
-      "post": {
-        "tags": ["Pagamentos & Stripe (Atividade 7)"],
-        "summary": "Receber e processar Webhooks assinados criptograficamente pelo Stripe",
-        "description": "Valida o header `stripe-signature` com HMAC SHA-256 e atualiza o usuário no banco para `is_premium: 1` de forma assíncrona quando o evento `checkout.session.completed` for recebido.",
-        "responses": {
-          "200": { "description": "Webhook processado com sucesso" },
-          "400": { "description": "Assinatura do webhook inválida ou erro no payload" }
-        }
-      }
+      "post": { "summary": "Webhook assinado e idempotente para os 4 eventos do Stripe (checkout.session.completed, customer.subscription.updated, customer.subscription.deleted, invoice.payment_failed)", "responses": { "200": { "description": "Evento processado com idempotência" }, "400": { "description": "Assinatura inválida" } } }
     },
-    "/api/premium/status": {
-      "get": {
-        "tags": ["Pagamentos & Stripe (Atividade 7)"],
-        "summary": "Consultar status do Plano Premium do usuário logado",
-        "responses": {
-          "200": {
-            "description": "Status da assinatura retornado",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "is_premium": { "type": "boolean" },
-                    "stripe_customer_id": { "type": "string" },
-                    "stripe_subscription_id": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+    "/api/admin/saas-metrics": {
+      "get": { "summary": "Painel Admin SaaS: Usuários por plano, assinaturas ativas, MRR de teste e últimos eventos do Redis", "responses": { "200": { "description": "Métricas executivas SaaS" }, "403": { "description": "Restrito a admin" } } }
     },
-    "/api/premium/cancel": {
-      "post": {
-        "tags": ["Pagamentos & Stripe (Atividade 7)"],
-        "summary": "Cancelar assinatura do Plano Premium e reverter privilégios para usuário comum",
-        "responses": {
-          "200": { "description": "Assinatura cancelada" }
-        }
-      }
+    "/api/profile": {
+      "get": { "summary": "Obter perfil completo do usuário logado", "responses": { "200": { "description": "Perfil" } } },
+      "put": { "summary": "Atualizar nome e bio", "responses": { "200": { "description": "Atualizado" } } }
     },
-    "/api/premium/simulate-webhook": {
-      "post": {
-        "tags": ["Pagamentos & Stripe (Atividade 7)"],
-        "summary": "Simular confirmação de pagamento para testes locais / CI sem chave Stripe real",
-        "responses": {
-          "200": { "description": "Simulação concluída com sucesso" }
-        }
-      }
+    "/api/profile/{id}": {
+      "get": { "summary": "Obter perfil público de um usuário", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Perfil público" } } }
+    },
+    "/api/profile/upload-photo": {
+      "post": { "summary": "Upload de foto de perfil para o MinIO S3", "responses": { "200": { "description": "Foto enviada" } } }
+    },
+    "/api/profile/avatar/{key}": {
+      "get": { "summary": "Servir objeto/imagem armazenado no MinIO", "parameters": [{ "name": "key", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Stream de imagem" } } }
+    },
+    "/api/users": {
+      "get": { "summary": "Listar todos os usuários (Admin)", "responses": { "200": { "description": "Usuários" } } }
+    },
+    "/api/admin/logs": {
+      "get": { "summary": "Consultar trilha de eventos do Redis Streams (Admin)", "responses": { "200": { "description": "Logs" } } }
     },
     "/health": {
-      "get": {
-        "tags": ["Observabilidade"],
-        "summary": "Health check de todas as dependências (MariaDB, Auth, Redis Streams, MinIO)",
-        "responses": { "200": { "description": "Todos os serviços saudáveis" } }
-      }
+      "get": { "summary": "Health check real de MariaDB, Auth, Log/Redis e MinIO", "responses": { "200": { "description": "UP" } } }
     },
     "/metrics": {
-      "get": {
-        "tags": ["Observabilidade"],
-        "summary": "Métricas no padrão Prometheus (OpenMetrics)",
-        "responses": { "200": { "description": "Métricas do sistema" } }
-      }
+      "get": { "summary": "Métricas Prometheus", "responses": { "200": { "description": "OpenMetrics" } } }
     }
   }
 }

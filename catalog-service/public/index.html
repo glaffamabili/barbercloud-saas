@@ -3,2521 +3,856 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catálogo Tom Hanks — Rede Social de Cinema</title>
-  
-  <!-- Fontes & Ícones -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>BarberCloud SaaS — Agendamento & Gestão para Barbearias e Estúdios</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
   <style>
-    :root {
-      --bg-dark: #0b0f19;
-      --bg-card: #151d30;
-      --bg-input: #0a0e17;
-      --border-color: #263352;
-      --accent: #e50914;
-      --accent-hover: #b80710;
-      --accent-blue: #3b82f6;
-      --accent-green: #10b981;
-      --accent-gold: #f59e0b;
-      --accent-purple: #8b5cf6;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --text-dim: #64748b;
-      --radius: 12px;
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background-image: radial-gradient(circle at top, #1e1b4b 0%, var(--bg-dark) 70%);
-      background-attachment: fixed;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* Navbar */
-    .navbar {
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-color);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      padding: 14px 0;
-    }
-
-    .nav-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 20px;
-      font-weight: 800;
-      color: #fff;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .nav-brand span {
-      color: var(--accent);
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .nav-link-btn {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 12px;
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      transition: var(--transition);
-    }
-
-    .nav-link-btn:hover {
-      color: #fff;
-      border-color: #3b82f6;
-    }
-
-    .user-profile-badge {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #1e293b;
-      padding: 5px 12px 5px 6px;
-      border-radius: 30px;
-      border: 1px solid var(--border-color);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .user-profile-badge:hover {
-      border-color: var(--accent-blue);
-    }
-
-    .user-avatar-slot {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 13px;
-      overflow: hidden;
-    }
-
-    .user-avatar-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .role-tag {
-      font-size: 10px;
-      font-weight: 800;
-      padding: 3px 8px;
-      border-radius: 20px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .role-tag.admin {
-      background: rgba(245, 158, 11, 0.2);
-      color: var(--accent-gold);
-      border: 1px solid rgba(245, 158, 11, 0.4);
-    }
-
-    .role-tag.usuario {
-      background: rgba(59, 130, 246, 0.2);
-      color: #60a5fa;
-      border: 1px solid rgba(59, 130, 246, 0.4);
-    }
-
-    .badge-vip {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      color: #0b0f19;
-      font-size: 10px;
-      font-weight: 800;
-      padding: 3px 8px;
-      border-radius: 20px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
-    }
-
-    .nav-btn-premium {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      color: #0b0f19;
-      font-weight: 800;
-      font-size: 13px;
-      padding: 7px 14px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: var(--transition);
-      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
-    }
-
-    .nav-btn-premium:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
-    }
-
-    .premium-feature-list {
-      list-style: none;
-      margin: 18px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .premium-feature-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 13px;
-      color: var(--text-main);
-    }
-
-    .premium-feature-item i {
-      color: var(--accent-gold);
-      font-size: 14px;
-    }
-
-    .btn-logout {
-      background: transparent;
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: var(--transition);
-    }
-
-    .btn-logout:hover {
-      background: rgba(239, 68, 68, 0.15);
-      color: #f87171;
-      border-color: rgba(239, 68, 68, 0.3);
-    }
-
-    /* Auth Wrapper & Tabs */
-    .auth-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: calc(100vh - 60px);
-      padding: 40px 20px;
-    }
-
-    .auth-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 36px 32px;
-      width: 100%;
-      max-width: 440px;
-      box-shadow: var(--shadow);
-      position: relative;
-    }
-
-    .brand {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .brand-icon {
-      width: 52px;
-      height: 52px;
-      background: linear-gradient(135deg, var(--accent), #991b1b);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      color: #fff;
-      margin: 0 auto 12px;
-    }
-
-    .brand-title {
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
-
-    .brand-title span {
-      color: var(--accent);
-    }
-
-    .auth-tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      background: var(--bg-input);
-      padding: 4px;
-      border-radius: 10px;
-      margin-bottom: 24px;
-      border: 1px solid var(--border-color);
-    }
-
-    .auth-tab {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .auth-tab.active {
-      background: #1e293b;
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-
-    .input-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .input-wrapper i {
-      position: absolute;
-      left: 14px;
-      color: var(--text-dim);
-      font-size: 14px;
-    }
-
-    .form-control {
-      width: 100%;
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      color: #fff;
-      padding: 12px 14px 12px 40px;
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
-      transition: var(--transition);
-    }
-
-    .form-control:focus {
-      border-color: var(--accent-blue);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-    }
-
-    .otp-input {
-      font-family: monospace;
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: 8px;
-      text-align: center;
-      padding: 12px;
-      color: #38bdf8;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border: none;
-      transition: var(--transition);
-      margin-top: 10px;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .btn-primary:hover {
-      background: var(--accent-hover);
-    }
-
-    .btn-success {
-      background: var(--accent-green);
-      color: #fff;
-    }
-
-    .btn-success:hover {
-      background: #059669;
-    }
-
-    .btn-blue {
-      background: var(--accent-blue);
-      color: #fff;
-    }
-
-    .btn-blue:hover {
-      background: #2563eb;
-    }
-
-    .btn-outline {
-      background: transparent;
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-    }
-
-    .btn-outline:hover {
-      color: #fff;
-      border-color: #94a3b8;
-    }
-
-    .btn-link {
-      background: transparent;
-      border: none;
-      color: var(--text-dim);
-      font-size: 12px;
-      cursor: pointer;
-      margin-top: 14px;
-      text-align: center;
-      width: 100%;
-      transition: var(--transition);
-    }
-
-    .btn-link:hover {
-      color: #fff;
-      text-decoration: underline;
-    }
-
-    .auth-error {
-      margin-top: 16px;
-      padding: 12px;
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      border-radius: 8px;
-      color: #f87171;
-      font-size: 13px;
-      text-align: center;
-      display: none;
-    }
-
-    /* Main Application Header & Tabs */
-    .hero-banner {
-      padding: 32px 0 24px;
-      text-align: center;
-    }
-
-    .hero-title {
-      font-size: 32px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      margin-bottom: 8px;
-    }
-
-    .hero-subtitle {
-      font-size: 15px;
-      color: var(--text-muted);
-      max-width: 600px;
-      margin: 0 auto 24px;
-    }
-
-    .app-tabs {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-    }
-
-    .app-tab-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      padding: 10px 18px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: var(--transition);
-    }
-
-    .app-tab-btn:hover {
-      color: #fff;
-      border-color: #3b82f6;
-    }
-
-    .app-tab-btn.active {
-      background: #1e293b;
-      color: #fff;
-      border-color: var(--accent-blue);
-      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.2);
-    }
-
-    .search-bar-wrapper {
-      max-width: 500px;
-      margin: 0 auto 30px;
-      position: relative;
-    }
-
-    .search-bar-wrapper i {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-dim);
-    }
-
-    .search-bar-wrapper input {
-      width: 100%;
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      color: #fff;
-      padding: 12px 16px 12px 44px;
-      border-radius: 30px;
-      font-size: 14px;
-      outline: none;
-      transition: var(--transition);
-    }
-
-    .search-bar-wrapper input:focus {
-      border-color: var(--accent-blue);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-    }
-
-    /* Grid & Cards de Filmes */
-    .movies-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 24px;
-      margin-bottom: 60px;
-    }
-
-    .movie-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: var(--transition);
-      position: relative;
-    }
-
-    .movie-card:hover {
-      transform: translateY(-6px);
-      border-color: #3b82f6;
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-    }
-
-    .poster-container {
-      width: 100%;
-      aspect-ratio: 2/3;
-      background: var(--bg-input);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .poster-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.4s ease;
-    }
-
-    .movie-card:hover .poster-container img {
-      transform: scale(1.05);
-    }
-
-    .rating-badge {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(6px);
-      color: var(--accent-gold);
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .movie-body {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
-
-    .movie-title {
-      font-size: 15px;
-      font-weight: 700;
-      line-height: 1.3;
-      margin-bottom: 6px;
-      color: var(--text-main);
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      min-height: 40px;
-    }
-
-    .movie-meta {
-      font-size: 12px;
-      color: var(--text-dim);
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .card-actions {
-      margin-top: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .btn-fav {
-      width: 100%;
-      background: rgba(229, 9, 20, 0.15);
-      color: #f87171;
-      border: 1px solid rgba(229, 9, 20, 0.3);
-      padding: 9px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: var(--transition);
-    }
-
-    .btn-fav:hover, .btn-fav.active {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .comment-box-toggle {
-      width: 100%;
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      padding: 8px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: var(--transition);
-    }
-
-    .comment-box-toggle:hover {
-      color: var(--text-main);
-      border-color: var(--text-dim);
-    }
-
-    .inline-comment-form {
-      margin-top: 10px;
-      display: none;
-    }
-
-    .inline-comment-form.open {
-      display: block;
-    }
-
-    .inline-comment-form textarea {
-      width: 100%;
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 8px 10px;
-      border-radius: 8px;
-      font-size: 12px;
-      resize: vertical;
-      min-height: 60px;
-      outline: none;
-      margin-bottom: 6px;
-    }
-
-    .btn-send-comment {
-      width: 100%;
-      background: var(--accent-blue);
-      color: white;
-      border: none;
-      padding: 7px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    /* Comentários Section */
-    .comments-list {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin-bottom: 60px;
-    }
-
-    .comment-item {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius);
-      padding: 18px 20px;
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-      transition: var(--transition);
-    }
-
-    .comment-item:hover {
-      border-color: #3b82f6;
-    }
-
-    .comment-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: #1e293b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      color: #fff;
-      flex-shrink: 0;
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-    }
-
-    .comment-content {
-      flex: 1;
-    }
-
-    .comment-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .comment-author-name {
-      font-weight: 700;
-      font-size: 14px;
-      color: var(--text-main);
-    }
-
-    .comment-movie-tag {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--accent-gold);
-      background: rgba(245, 158, 11, 0.1);
-      padding: 2px 8px;
-      border-radius: 4px;
-      margin-left: 6px;
-    }
-
-    .comment-date {
-      font-size: 12px;
-      color: var(--text-dim);
-    }
-
-    .comment-text {
-      font-size: 14px;
-      color: var(--text-main);
-      line-height: 1.5;
-      margin-bottom: 10px;
-    }
-
-    .btn-delete-comment {
-      background: rgba(239, 68, 68, 0.15);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: var(--transition);
-    }
-
-    .btn-delete-comment:hover {
-      background: #ef4444;
-      color: white;
-    }
-
-    /* SEÇÃO DE PERFIL SOCIAL DO USUÁRIO */
-    .profile-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      overflow: hidden;
-      margin-bottom: 40px;
-      box-shadow: var(--shadow);
-    }
-
-    .profile-cover {
-      height: 160px;
-      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e3a8a 100%);
-      position: relative;
-    }
-
-    .profile-header-content {
-      padding: 0 32px 32px;
-      position: relative;
-      margin-top: -60px;
-      display: flex;
-      gap: 24px;
-      align-items: flex-end;
-      flex-wrap: wrap;
-    }
-
-    .profile-avatar-container {
-      position: relative;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: #0f172a;
-      border: 4px solid var(--bg-card);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 44px;
-      font-weight: 800;
-      color: #fff;
-    }
-
-    .profile-avatar-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .profile-avatar-upload-btn {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      left: 0;
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(4px);
-      color: #fff;
-      border: none;
-      padding: 4px 0;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-      transition: var(--transition);
-    }
-
-    .profile-avatar-upload-btn:hover {
-      background: var(--accent);
-    }
-
-    .profile-info {
-      flex: 1;
-      padding-top: 60px;
-    }
-
-    .profile-name {
-      font-size: 26px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .profile-email-badge {
-      font-size: 14px;
-      color: #93c5fd;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 4px;
-      font-weight: 600;
-    }
-
-    .profile-bio-box {
-      margin-top: 14px;
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 14px 18px;
-      font-size: 14px;
-      color: var(--text-main);
-      line-height: 1.6;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 14px;
-    }
-
-    .profile-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-      margin: 24px 0 40px;
-    }
-
-    .stat-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .stat-card i {
-      font-size: 24px;
-      margin-bottom: 8px;
-    }
-
-    .stat-card .val {
-      font-size: 26px;
-      font-weight: 800;
-      color: #fff;
-    }
-
-    .stat-card .lbl {
-      font-size: 12px;
-      color: var(--text-muted);
-      font-weight: 600;
-      text-transform: uppercase;
-      margin-top: 4px;
-    }
-
-    /* Admin Table */
-    .admin-table-container {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius);
-      overflow: hidden;
-      margin-bottom: 60px;
-    }
-
-    .admin-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 13px;
-    }
-
-    .admin-table th {
-      background: var(--bg-input);
-      color: var(--text-muted);
-      font-weight: 700;
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--border-color);
-      text-transform: uppercase;
-    }
-
-    .admin-table td {
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    /* Modais */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(6px);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .modal-content {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 32px;
-      width: 100%;
-      max-width: 440px;
-      box-shadow: var(--shadow);
-      position: relative;
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 18px;
-      right: 18px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    /* Toast Notifications */
-    #toast-container {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .toast {
-      background: #1e293b;
-      border: 1px solid var(--border-color);
-      color: #fff;
-      padding: 14px 18px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      box-shadow: var(--shadow);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 280px;
-      animation: slideIn 0.3s ease;
-    }
-
-    .toast.success { border-left: 4px solid var(--accent-green); }
-    .toast.error { border-left: 4px solid var(--accent); }
-    .toast.info { border-left: 4px solid var(--accent-blue); }
-
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    .spinner {
-      display: inline-block;
-      width: 36px;
-      height: 36px;
-      border: 4px solid rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      border-top-color: var(--accent);
-      animation: spin 0.8s linear infinite;
-      margin: 40px auto;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    @media (max-width: 640px) {
-      .hero-title { font-size: 24px; }
-      .movies-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-      .profile-header-content { padding: 0 16px 20px; flex-direction: column; align-items: center; text-align: center; }
-      .profile-info { padding-top: 10px; }
-      .profile-name { justify-content: center; }
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background: #090d16; color: #f8fafc; min-height: 100vh; }
+    a { color: inherit; text-decoration: none; }
+    .navbar { display: flex; justify-content: space-between; align-items: center; padding: 18px 36px; background: rgba(15, 23, 42, 0.92); border-bottom: 1px solid #1e293b; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+    .brand { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 800; color: #fff; }
+    .brand-icon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #f59e0b, #d97706); display: flex; align-items: center; justify-content: center; color: #090d16; font-size: 18px; font-weight: 800; }
+    .nav-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .btn { padding: 10px 18px; border-radius: 9px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+    .btn-amber { background: linear-gradient(135deg, #f59e0b, #d97706); color: #090d16; }
+    .btn-amber:hover { transform: translateY(-1px); filter: brightness(1.08); }
+    .btn-outline { background: #1e293b; color: #e2e8f0; border: 1px solid #334155; }
+    .btn-outline:hover { background: #334155; }
+    .btn-danger { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); }
+    .badge { padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; }
+    .badge-pro { background: linear-gradient(135deg, #f59e0b, #b45309); color: #090d16; }
+    .badge-free { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
+    .badge-role { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.35); }
+
+    /* Landing Page Pública */
+    .hero { max-width: 1180px; margin: 0 auto; padding: 68px 24px 48px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 36px; align-items: center; }
+    .hero h1 { font-size: 42px; font-weight: 800; line-height: 1.15; margin-bottom: 18px; }
+    .hero h1 span { color: #f59e0b; }
+    .hero p { font-size: 16px; color: #94a3b8; line-height: 1.65; margin-bottom: 28px; }
+    .section { max-width: 1180px; margin: 0 auto; padding: 36px 24px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px; }
+    .card { background: #111827; border: 1px solid #1f2937; border-radius: 16px; padding: 24px; box-shadow: 0 12px 30px rgba(0,0,0,0.35); }
+    .card-pro { border: 2px solid #f59e0b; background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, #111827 100%); }
+    .input, select, textarea { width: 100%; padding: 11px 14px; border-radius: 9px; border: 1px solid #334155; background: #0b1120; color: #fff; font-size: 13px; margin-top: 6px; margin-bottom: 14px; }
+    label { font-size: 12px; font-weight: 700; color: #cbd5e1; text-transform: uppercase; }
+    .tabs { display: flex; gap: 10px; border-bottom: 1px solid #1e293b; padding-bottom: 14px; margin-bottom: 24px; flex-wrap: wrap; }
+    .tab-btn { padding: 10px 18px; border-radius: 10px; background: #111827; color: #94a3b8; border: 1px solid #1f2937; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .tab-btn.active { background: #f59e0b; color: #090d16; border-color: #f59e0b; }
+    .stat-number { font-size: 28px; font-weight: 800; color: #f59e0b; margin-top: 6px; }
+    .hidden { display: none !important; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #1f2937; }
+    th { color: #94a3b8; font-size: 11px; text-transform: uppercase; }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #10b981; color: #052e16; font-weight: 800; padding: 14px 22px; border-radius: 12px; box-shadow: 0 15px 30px rgba(0,0,0,0.5); z-index: 9999; }
+    @media (max-width: 820px) { .hero { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
-
-  <div id="toast-container"></div>
-
-  <!-- MODAL: RECUPERAÇÃO DE SENHA -->
-  <!-- MODAL: RECUPERAÇÃO DE SENHA -->
-  <div id="forgot-modal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <button class="modal-close" onclick="fecharModal('forgot-modal')"><i class="fa-solid fa-xmark"></i></button>
-      <h3 style="font-size: 20px; margin-bottom: 10px;"><i class="fa-solid fa-key" style="color: var(--accent-gold); margin-right: 8px;"></i>Recuperar Senha</h3>
-      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
-        Informe seu e-mail cadastrado. Enviaremos um link para você cadastrar uma nova senha.
-      </p>
-      <div class="form-group">
-        <label>Seu E-mail</label>
-        <div class="input-wrapper">
-          <i class="fa-solid fa-envelope"></i>
-          <input type="email" id="forgot-email" class="form-control" placeholder="exemplo@gmail.com">
-        </div>
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-scissors"></i></div>
+      <div>
+        BarberCloud <span style="color:#f59e0b;">SaaS</span>
+        <div style="font-size:11px; font-weight:500; color:#94a3b8;">Gestão Cloud & Assinaturas para Barbearias</div>
       </div>
-      <button id="btn-forgot-send" class="btn btn-primary" onclick="enviarRecuperacao()">
-        <i class="fa-solid fa-paper-plane"></i> Enviar Link de Recuperação
-      </button>
     </div>
-  </div>
 
-  <!-- MODAL: EDITAR BIOGRAFIA -->
-  <div id="edit-bio-modal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <button class="modal-close" onclick="fecharModal('edit-bio-modal')"><i class="fa-solid fa-xmark"></i></button>
-      <h3 style="font-size: 20px; margin-bottom: 10px;"><i class="fa-solid fa-pen-to-square" style="color: var(--accent-blue); margin-right: 8px;"></i>Editar Perfil</h3>
-      <div class="form-group">
-        <label>Seu Nome de Exibição</label>
-        <input type="text" id="edit-profile-name" class="form-control" placeholder="Seu nome">
-      </div>
-      <div class="form-group">
-        <label>Biografia / Sobre Você</label>
-        <textarea id="edit-profile-bio" class="form-control" style="min-height: 100px; padding: 12px; resize: vertical;" placeholder="Conte sobre sua paixão por cinema e seus filmes favoritos de Tom Hanks..."></textarea>
-      </div>
-      <button id="btn-save-bio" class="btn btn-primary" onclick="salvarBiografia()">
-        <i class="fa-solid fa-floppy-disk"></i> Salvar Alterações
-      </button>
+    <div class="nav-actions" id="navPublic">
+      <a href="#catalogoPublico" class="btn btn-outline"><i class="fa-solid fa-list"></i> Serviços</a>
+      <a href="#planosPublicos" class="btn btn-outline"><i class="fa-solid fa-crown"></i> Planos Free & Pro</a>
+      <a href="/apidocs" class="btn btn-outline"><i class="fa-solid fa-code"></i> Swagger API</a>
+      <button onclick="abrirModalAuth('login')" class="btn btn-outline"><i class="fa-solid fa-right-to-bracket"></i> Entrar</button>
+      <button onclick="abrirModalAuth('register')" class="btn btn-amber"><i class="fa-solid fa-user-plus"></i> Criar Conta Grátis</button>
     </div>
-  </div>
 
-  <!-- MODAL: PLANO PREMIUM (STRIPE) -->
-  <div id="premium-modal" class="modal-overlay hidden">
-    <div class="modal-content" style="max-width: 480px; text-align: center; border: 1px solid rgba(245, 158, 11, 0.4); box-shadow: 0 15px 40px rgba(245, 158, 11, 0.2);">
-      <button class="modal-close" onclick="fecharModal('premium-modal')"><i class="fa-solid fa-xmark"></i></button>
-      
-      <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 50%; margin: 0 auto 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; color: #0b0f19; box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);">
-        <i class="fa-solid fa-crown"></i>
-      </div>
-
-      <span class="badge-vip" style="font-size: 11px; margin-bottom: 8px;">STRIPE CHECKOUT • MODO DE TESTE</span>
-      <h3 style="font-size: 22px; font-weight: 800; margin: 8px 0 4px; color: #fff;">Plano Premium Tom Hanks</h3>
-      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 18px;">
-        Desbloqueie todos os recursos cinematográficos sem limites.
-      </p>
-
-      <div style="background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; margin-bottom: 20px; text-align: left;">
-        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-          <span style="font-size: 14px; font-weight: 700; color: #94a3b8;">Assinatura Mensal</span>
-          <div>
-            <span style="font-size: 28px; font-weight: 800; color: #f59e0b;">R$ 9,90</span>
-            <span style="font-size: 12px; color: var(--text-muted);">/mês</span>
-          </div>
-        </div>
-
-        <ul class="premium-feature-list">
-          <li class="premium-feature-item">
-            <i class="fa-solid fa-circle-check"></i>
-            <span><strong>Favoritos Ilimitados</strong> (Plano gratuito limitado a 3)</span>
-          </li>
-          <li class="premium-feature-item">
-            <i class="fa-solid fa-circle-check"></i>
-            <span><strong>Selo VIP Dourado 👑</strong> no perfil e nos comentários</span>
-          </li>
-          <li class="premium-feature-item">
-            <i class="fa-solid fa-circle-check"></i>
-            <span><strong>Segurança PCI-DSS</strong> (Cobrança direta via Stripe)</span>
-          </li>
-          <li class="premium-feature-item">
-            <i class="fa-solid fa-circle-check"></i>
-            <span><strong>Cancele quando quiser</strong> diretamente no perfil</span>
-          </li>
-        </ul>
-      </div>
-
-      <button id="btn-checkout-stripe" class="btn btn-primary" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #0b0f19; font-weight: 800; font-size: 14px; padding: 12px; border: none; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);" onclick="iniciarStripeCheckout()">
-        <i class="fa-brands fa-stripe" style="font-size: 20px; margin-right: 6px;"></i> Assinar com Stripe Checkout (R$ 9,90/mês)
-      </button>
-
-      <p style="font-size: 11px; color: var(--text-dim); margin-top: 14px;">
-        <i class="fa-solid fa-shield-halved"></i> Modo de teste: use o cartão <code>4242 4242 4242 4242</code>. Nenhuma cobrança real.
-      </p>
+    <div class="nav-actions hidden" id="navLogged">
+      <span id="userRoleBadge" class="badge badge-role">CLIENTE</span>
+      <span id="userPlanBadge" class="badge badge-free">PLANO FREE</span>
+      <span id="userNameLabel" style="font-size:13px; font-weight:700;"></span>
+      <button id="btnUpgradeHeader" onclick="iniciarAssinaturaPro()" class="btn btn-amber"><i class="fa-solid fa-bolt"></i> Assinar Pro (R$ 29,90)</button>
+      <button onclick="abrirBillingPortal()" class="btn btn-outline"><i class="fa-solid fa-credit-card"></i> Gerenciar Assinatura</button>
+      <button onclick="logout()" class="btn btn-danger"><i class="fa-solid fa-power-off"></i> Sair</button>
     </div>
-  </div>
+  </nav>
 
-  <!-- SEÇÃO DE AUTENTICAÇÃO -->
-  <div id="auth-section" class="auth-wrapper">
-    <div class="auth-card">
-      <div class="brand">
-        <div class="brand-icon"><i class="fa-solid fa-film"></i></div>
-        <div class="brand-title">Tom<span>Hanks</span> Movies</div>
-        <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Rede Social & Catálogo de Cinema</p>
+  <!-- ================= LANDING PAGE PÚBLICA (ATIVIDADE 10) ================= -->
+  <div id="landingPage">
+    <section class="hero">
+      <div>
+        <span class="badge badge-pro" style="margin-bottom:14px; display:inline-block;">🚀 SAAS EM NUVEM PARA BARBEARIAS & SALÕES</span>
+        <h1>Elimine filas no WhatsApp e furos de horário com o <span>BarberCloud</span>.</h1>
+        <p>
+          Transforme o atendimento da sua barbearia, estúdio de estética ou pet shop em 5 minutos: catálogo visual de cortes no MinIO S3,
+          agendamento online com isolamento por cliente, lembretes 2FA por e-mail e assinatura recorrente via Stripe.
+        </p>
+        <div style="display:flex; gap:14px; flex-wrap:wrap;">
+          <button onclick="abrirModalAuth('register')" class="btn btn-amber" style="padding:14px 26px; font-size:15px;">
+            <i class="fa-solid fa-calendar-check"></i> Começar no Plano Grátis
+          </button>
+          <a href="#planosPublicos" class="btn btn-outline" style="padding:14px 24px; font-size:15px;">
+            <i class="fa-solid fa-gem"></i> Comparar Planos Free vs Pro
+          </a>
+        </div>
       </div>
 
-      <div id="auth-tabs-container" class="auth-tabs">
-        <button id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">Entrar</button>
-        <button id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">Criar Conta</button>
-      </div>
-
-      <!-- 1. Formulário de Login (Etapa 1) -->
-      <form id="login-form" onsubmit="event.preventDefault(); login();">
-        <div class="form-group">
-          <label>E-mail</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-envelope"></i>
-            <input type="email" id="login-email" class="form-control" placeholder="seu-email@gmail.com" required>
+      <div class="card card-pro">
+        <h3 style="font-size:18px; margin-bottom:14px;"><i class="fa-solid fa-bolt" style="color:#f59e0b;"></i> Acesso Rápido / Conta Demo</h3>
+        <div id="authBoxLanding">
+          <div style="display:flex; gap:8px; margin-bottom:14px;">
+            <button id="tabLoginBtn" onclick="alternarAbaAuth('login')" class="btn btn-amber" style="flex:1; justify-content:center;">Login</button>
+            <button id="tabRegBtn" onclick="alternarAbaAuth('register')" class="btn btn-outline" style="flex:1; justify-content:center;">Criar Conta</button>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label>Senha</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-lock"></i>
-            <input type="password" id="login-senha" class="form-control" placeholder="••••••••" required>
+          <div id="formLogin">
+            <label>E-mail Cadastrado</label>
+            <input type="email" id="loginEmail" class="input" placeholder="seuemail@dominio.com">
+            <label>Senha</label>
+            <input type="password" id="loginSenha" class="input" placeholder="••••••">
+            <button onclick="fazerLogin()" class="btn btn-amber" style="width:100%; justify-content:center; padding:12px;">
+              <i class="fa-solid fa-lock"></i> Entrar com 2FA Seguro
+            </button>
           </div>
-        </div>
 
-        <button type="submit" id="btn-login" class="btn btn-primary">
-          <i class="fa-solid fa-right-to-bracket"></i> Acessar com 2FA
-        </button>
-
-        <button type="button" class="btn-link" onclick="abrirModal('forgot-modal')">
-          Esqueceu sua senha?
-        </button>
-      </form>
-
-      <!-- 2. Formulário de Cadastro com Validação de E-mail Real -->
-      <form id="register-form" class="hidden" onsubmit="event.preventDefault(); cadastrar();">
-        <div class="form-group">
-          <label>Nome Completo</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-user"></i>
-            <input type="text" id="reg-nome" class="form-control" placeholder="Ex: Amabili Flor" required>
+          <div id="form2FA" class="hidden">
+            <p style="font-size:13px; color:#fbbf24; margin-bottom:10px;">Digite o código de 6 dígitos enviado para seu e-mail:</p>
+            <input type="text" id="inputCodigo2FA" class="input" placeholder="123456" maxlength="6">
+            <button onclick="confirmar2FA()" class="btn btn-amber" style="width:100%; justify-content:center;">Validar Código 2FA</button>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label>E-mail Real (Será validado via código)</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-envelope"></i>
-            <input type="email" id="reg-email" class="form-control" placeholder="seu-email-real@gmail.com" required>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Crie uma Senha Segura (mínimo 6 dígitos)</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-lock"></i>
-            <input type="password" id="reg-senha" class="form-control" placeholder="••••••••" minlength="6" required>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Tipo de Conta (Papel RBAC)</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-shield-halved"></i>
-            <select id="reg-role" class="form-control" style="padding-left: 40px;">
-              <option value="usuario">Usuário Comum</option>
-              <option value="admin">Administrador (Admin)</option>
+          <div id="formRegister" class="hidden">
+            <label>Nome Completo ou Barbearia</label>
+            <input type="text" id="regNome" class="input" placeholder="Ex: Lucas Almeida">
+            <label>E-mail Real (Validação DNS MX)</label>
+            <input type="email" id="regEmail" class="input" placeholder="lucas@gmail.com">
+            <label>Perfil de Acesso (RBAC)</label>
+            <select id="regRole" class="input">
+              <option value="cliente">Cliente (Agendar Cortes e Serviços)</option>
+              <option value="profissional">Profissional / Barbeiro (Gerenciar Catálogo e Agenda)</option>
             </select>
-          </div>
-        </div>
-
-        <button type="submit" id="btn-register" class="btn btn-success">
-          <i class="fa-solid fa-user-plus"></i> Validar E-mail e Criar Conta
-        </button>
-      </form>
-
-      <!-- 3. TELA DEDICADA: VERIFICAÇÃO EM DUAS ETAPAS (2FA OTP) -->
-      <div id="auth-2fa-step" class="hidden">
-        <div style="text-align: center; margin-bottom: 20px;">
-          <div style="width: 52px; height: 52px; background: linear-gradient(135deg, var(--accent-blue), #1d4ed8); border-radius: 12px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);">
-            <i class="fa-solid fa-shield-halved"></i>
-          </div>
-          <h3 style="font-size: 20px; font-weight: 800; color: #fff;">Verificação em Duas Etapas</h3>
-          <p style="font-size: 13px; color: var(--text-muted); margin-top: 6px;">
-            Enviamos um código de segurança de 6 dígitos para:<br>
-            <strong id="auth-2fa-email-display" style="color: #38bdf8; font-size: 14px; word-break: break-all;"></strong>
-          </p>
-        </div>
-
-        <form onsubmit="event.preventDefault(); confirmar2FA();">
-          <div class="form-group">
-            <label style="text-align: center; display: block; font-weight: 700; color: #cbd5e1; margin-bottom: 8px;">Código de 6 Dígitos (2FA)</label>
-            <input type="text" id="twofa-code" class="form-control otp-input" maxlength="6" placeholder="000000" autocomplete="one-time-code" required>
-          </div>
-
-          <button type="submit" id="btn-confirm-2fa" class="btn btn-blue" style="background: var(--accent-blue); color: #fff; font-weight: 700; width: 100%;">
-            <i class="fa-solid fa-lock-open"></i> Validar e Acessar Minha Conta
-          </button>
-
-          <div style="display: flex; gap: 10px; margin-top: 14px;">
-            <button type="button" class="btn btn-outline" style="flex: 1; font-size: 12px; padding: 10px; margin-top: 0;" onclick="solicitarReenvioCodigo('LOGIN_2FA')">
-              <i class="fa-solid fa-rotate-right"></i> Reenviar Código
-            </button>
-            <button type="button" class="btn btn-outline" style="flex: 1; font-size: 12px; padding: 10px; margin-top: 0;" onclick="voltarParaLogin()">
-              <i class="fa-solid fa-arrow-left"></i> Voltar
+            <label>Senha (mín. 6 caracteres)</label>
+            <input type="password" id="regSenha" class="input" placeholder="••••••">
+            <button onclick="fazerCadastro()" class="btn btn-amber" style="width:100%; justify-content:center; padding:12px;">
+              Criar Conta no BarberCloud
             </button>
           </div>
-        </form>
+
+          <div id="formVerifyEmail" class="hidden">
+            <p style="font-size:13px; color:#38bdf8; margin-bottom:10px;">Digite o código de ativação enviado ao seu e-mail:</p>
+            <input type="text" id="inputCodigoEmail" class="input" placeholder="123456" maxlength="6">
+            <button onclick="confirmarEmail()" class="btn btn-amber" style="width:100%; justify-content:center;">Ativar Minha Conta</button>
+          </div>
+        </div>
       </div>
+    </section>
 
-      <!-- 4. TELA DEDICADA: ATIVAÇÃO DE CONTA (Validação de E-mail Real) -->
-      <div id="auth-verify-email-step" class="hidden">
-        <div style="text-align: center; margin-bottom: 20px;">
-          <div style="width: 52px; height: 52px; background: linear-gradient(135deg, var(--accent-green), #059669); border-radius: 12px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);">
-            <i class="fa-solid fa-envelope-circle-check"></i>
-          </div>
-          <h3 style="font-size: 20px; font-weight: 800; color: #fff;">Ativação de Conta</h3>
-          <p style="font-size: 13px; color: var(--text-muted); margin-top: 6px;">
-            Digite o código de 6 dígitos que enviamos para:<br>
-            <strong id="auth-verify-email-display" style="color: #38bdf8; font-size: 14px; word-break: break-all;"></strong>
-          </p>
+    <section class="section" id="catalogoPublico">
+      <h2 style="font-size:26px; margin-bottom:8px;">💈 Vitrine de Serviços & Cortes</h2>
+      <p style="color:#94a3b8; font-size:14px; margin-bottom:22px;">Serviços reais persistidos no MariaDB (`db/001_dominio.sql`) com fotos servidas pelo MinIO Object Storage.</p>
+      <div class="grid-3" id="listaServicosPublico"></div>
+    </section>
+
+    <section class="section" id="planosPublicos">
+      <h2 style="font-size:26px; margin-bottom:8px;">💳 Planos de Assinatura Recorrente (Stripe Billing)</h2>
+      <p style="color:#94a3b8; font-size:14px; margin-bottom:24px;">Comece gratuitamente e faça upgrade para o Plano Pro quando sua agenda decolar.</p>
+      <div class="grid-2">
+        <div class="card">
+          <span class="badge badge-free">PLANO INICIANTE</span>
+          <h3 style="font-size:22px; margin-top:12px;">Plano Free</h3>
+          <div class="stat-number" style="color:#e2e8f0;">R$ 0,00 <span style="font-size:14px; font-weight:500; color:#94a3b8;">/ mês</span></div>
+          <ul style="margin:20px 0; padding-left:20px; color:#cbd5e1; line-height:1.9; font-size:14px;">
+            <li>Até <strong>3 agendamentos ativos</strong> simultâneos (bloqueio automático no 4º)</li>
+            <li>Acesso completo ao catálogo de cortes e preços</li>
+            <li>Upload de foto de perfil e comprovante no MinIO S3</li>
+            <li>Segurança com 2FA por e-mail</li>
+          </ul>
+          <button onclick="abrirModalAuth('register')" class="btn btn-outline" style="width:100%; justify-content:center;">Criar Conta Free</button>
         </div>
 
-        <form onsubmit="event.preventDefault(); confirmarAtivacaoEmail();">
-          <div class="form-group">
-            <label style="text-align: center; display: block; font-weight: 700; color: #cbd5e1; margin-bottom: 8px;">Código de Ativação (6 Dígitos)</label>
-            <input type="text" id="verify-email-code" class="form-control otp-input" maxlength="6" placeholder="000000" autocomplete="one-time-code" required>
-          </div>
-
-          <button type="submit" id="btn-confirm-verify-email" class="btn btn-success" style="background: var(--accent-green); color: #fff; font-weight: 700; width: 100%;">
-            <i class="fa-solid fa-circle-check"></i> Validar E-mail e Ativar Conta
-          </button>
-
-          <div style="display: flex; gap: 10px; margin-top: 14px;">
-            <button type="button" class="btn btn-outline" style="flex: 1; font-size: 12px; padding: 10px; margin-top: 0;" onclick="solicitarReenvioCodigo('EMAIL_VERIFICACAO')">
-              <i class="fa-solid fa-rotate-right"></i> Reenviar Código
-            </button>
-            <button type="button" class="btn btn-outline" style="flex: 1; font-size: 12px; padding: 10px; margin-top: 0;" onclick="voltarParaLogin()">
-              <i class="fa-solid fa-arrow-left"></i> Voltar
-            </button>
-          </div>
-        </form>
+        <div class="card card-pro">
+          <span class="badge badge-pro">👑 MAIS POPULAR • RECORRENTE</span>
+          <h3 style="font-size:22px; margin-top:12px;">Plano BarberCloud Pro</h3>
+          <div class="stat-number">R$ 29,90 <span style="font-size:14px; font-weight:500; color:#94a3b8;">/ mês</span></div>
+          <ul style="margin:20px 0; padding-left:20px; color:#cbd5e1; line-height:1.9; font-size:14px;">
+            <li><strong>Agendamentos e serviços ILIMITADOS</strong> sem restrição mensal</li>
+            <li>Selo verificado <strong>👑 PRO ATIVO</strong> em toda a plataforma</li>
+            <li>Anexos ilimitados de fotos de cortes e comprovantes no MinIO S3</li>
+            <li>Portal do Cliente Stripe para trocar plano ou cancelar com 1 clique</li>
+          </ul>
+          <button onclick="abrirModalAuth('register')" class="btn btn-amber" style="width:100%; justify-content:center;">Começar e Assinar Pro</button>
+        </div>
       </div>
-
-      <div id="auth-msg" class="auth-error"></div>
-    </div>
+    </section>
   </div>
 
-  <!-- SEÇÃO PRINCIPAL DO APP -->
-  <div id="app-section" class="hidden">
-    <!-- Navbar -->
-    <nav class="navbar">
-      <div class="container nav-container">
-        <div class="nav-brand" onclick="mostrarSecao('todos')">
-          <i class="fa-solid fa-film" style="color: var(--accent);"></i>
-          <span>Tom</span>Hanks
+  <!-- ================= PAINEL AUTENTICADO DO SAAS (ATIVIDADES 10 E 11) ================= -->
+  <div id="appDashboard" class="section hidden">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="mostrarAbaApp('abaAgendamentos')"><i class="fa-solid fa-calendar-days"></i> Meus Agendamentos (CRUD)</button>
+      <button class="tab-btn" onclick="mostrarAbaApp('abaServicos')"><i class="fa-solid fa-scissors"></i> Catálogo de Serviços</button>
+      <button class="tab-btn" onclick="mostrarAbaApp('abaAssinatura')"><i class="fa-solid fa-crown"></i> Meu Plano & Stripe Billing</button>
+      <button class="tab-btn" onclick="mostrarAbaApp('abaPerfil')"><i class="fa-solid fa-user-gear"></i> Meu Perfil (MinIO S3)</button>
+      <button class="tab-btn hidden" id="btnAbaAdmin" onclick="mostrarAbaApp('abaAdmin')"><i class="fa-solid fa-chart-pie"></i> Painel Admin SaaS & MRR</button>
+    </div>
+
+    <!-- ABA 1: AGENDAMENTOS (CRUD + ISOLAMENTO MULTI-TENANT + MINIO COMPROVANTE) -->
+    <div id="abaAgendamentos">
+      <div class="grid-2" style="margin-bottom:24px;">
+        <div class="card">
+          <h3 style="margin-bottom:14px;"><i class="fa-solid fa-calendar-plus" style="color:#f59e0b;"></i> Novo Agendamento</h3>
+          <p id="avisoLimitePlano" style="font-size:12px; color:#fbbf24; margin-bottom:12px;"></p>
+          <label>Escolha o Serviço / Corte</label>
+          <select id="selectServicoAgendamento" class="input"></select>
+          <label>Data e Horário</label>
+          <input type="datetime-local" id="inputDataHoraAgendamento" class="input">
+          <label>Observações para o Barbeiro</label>
+          <textarea id="inputObsAgendamento" class="input" rows="2" placeholder="Ex: Degradê navalhado médio, preservar topo..."></textarea>
+          <button onclick="criarAgendamento()" class="btn btn-amber" style="width:100%; justify-content:center;">
+            <i class="fa-solid fa-check"></i> Confirmar Agendamento
+          </button>
         </div>
 
-        <div class="nav-links">
-          <button id="nav-premium-btn" class="nav-btn-premium" onclick="abrirModal('premium-modal')">
-            <i class="fa-solid fa-crown"></i> Seja Premium
-          </button>
-          <a href="/apidocs" target="_blank" class="nav-link-btn">
-            <i class="fa-solid fa-book" style="color: #10b981;"></i> Swagger API
-          </a>
-          <a href="/health" target="_blank" class="nav-link-btn">
-            <i class="fa-solid fa-heart-pulse" style="color: #ef4444;"></i> Health
-          </a>
-          <a href="/metrics" target="_blank" class="nav-link-btn">
-            <i class="fa-solid fa-chart-line" style="color: #3b82f6;"></i> Metrics
-          </a>
-
-          <div class="user-profile-badge" onclick="mostrarSecao('perfil')">
-            <div class="user-avatar-slot" id="user-avatar-slot">U</div>
-            <span id="user-display" style="font-size: 13px; font-weight: 700;">Usuário</span>
-            <span class="role-tag" id="role-display">USUÁRIO</span>
-            <span id="vip-badge-display" class="badge-vip hidden"><i class="fa-solid fa-crown"></i> VIP</span>
+        <div class="card">
+          <h3 style="margin-bottom:14px;"><i class="fa-solid fa-shield-halved" style="color:#38bdf8;"></i> Isolamento Multi-Tenant & Limites</h3>
+          <p style="font-size:13px; color:#94a3b8; line-height:1.6; margin-bottom:14px;">
+            No <strong>BarberCloud SaaS</strong>, cada cliente possui visibilidade e permissão estrita apenas sobre seus próprios agendamentos.
+            Tentativas de acessar ou alterar registros de terceiros retornam <code>HTTP 403 Forbidden</code> e disparam alerta no <strong>Redis Streams</strong>.
+          </p>
+          <div style="background:#0b1120; border:1px solid #1e293b; border-radius:10px; padding:14px;">
+            <div style="font-size:12px; color:#94a3b8;">Status da Sua Assinatura:</div>
+            <div id="resumoAssinaturaCard" style="font-size:16px; font-weight:800; color:#f59e0b; margin-top:4px;">Carregando...</div>
+            <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+              <button onclick="iniciarAssinaturaPro()" class="btn btn-amber"><i class="fa-solid fa-crown"></i> Upgrade Pro (R$ 29,90)</button>
+              <button onclick="abrirBillingPortal()" class="btn btn-outline"><i class="fa-solid fa-sliders"></i> Portal do Cliente Stripe</button>
+            </div>
           </div>
-
-          <button onclick="logout()" class="btn-logout">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
-          </button>
         </div>
       </div>
-    </nav>
 
-    <!-- Main Content -->
-    <main class="container">
-      <section class="hero-banner">
-        <h1 class="hero-title">Filmografia Completa</h1>
-        <p class="hero-subtitle">Explore os clássicos inesquecíveis, comente suas impressões e compartilhe seu perfil com outros cinéfilos.</p>
+      <div class="card">
+        <h3 style="margin-bottom:16px;"><i class="fa-solid fa-list-check"></i> Agenda de Atendimentos</h3>
+        <div id="listaAgendamentosContainer"></div>
+      </div>
+    </div>
 
-        <!-- Navegação de Abas -->
-        <div class="app-tabs">
-          <button id="tab-btn-todos" class="app-tab-btn active" onclick="mostrarSecao('todos', this)">
-            <i class="fa-solid fa-clapperboard"></i> Todos os Filmes (<span id="total-movies-badge">0</span>)
-          </button>
-          <button id="tab-btn-perfil" class="app-tab-btn" onclick="mostrarSecao('perfil', this)">
-            <i class="fa-solid fa-circle-user" style="color: var(--accent-purple);"></i> Meu Perfil Social
-          </button>
-          <button id="tab-btn-favoritos" class="app-tab-btn" onclick="mostrarSecao('favoritos', this)">
-            <i class="fa-solid fa-heart" style="color: var(--accent);"></i> Meus Favoritos (<span id="total-favs-badge">0</span>)
-          </button>
-          <button id="tab-btn-comentarios" class="app-tab-btn" onclick="mostrarSecao('comentarios', this)">
-            <i class="fa-solid fa-comments" style="color: var(--accent-blue);"></i> Comunidade (<span id="total-comms-badge">0</span>)
-          </button>
-          <button id="tab-btn-admin" class="app-tab-btn hidden" onclick="mostrarSecao('admin', this)">
-            <i class="fa-solid fa-shield-halved" style="color: var(--accent-gold);"></i> Painel Admin (<span id="total-users-badge">0</span>)
-          </button>
-        </div>
-
-        <!-- Barra de Busca -->
-        <div class="search-bar-wrapper" id="search-container">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="movie-search" placeholder="Pesquisar por título ou personagem..." oninput="filtrarFilmes()">
-        </div>
-      </section>
-
-      <!-- ABA 1: TODOS OS FILMES -->
-      <section id="tab-content-todos">
-        <div id="movies-list" class="movies-grid">
-          <div class="spinner"></div>
-        </div>
-      </section>
-
-      <!-- ABA 2: MEU PERFIL SOCIAL (MinIO, Bio, Foto, E-mail & Estatísticas) -->
-      <section id="tab-content-perfil" class="hidden">
-        <div class="profile-card">
-          <div class="profile-cover"></div>
-          <div class="profile-header-content">
-            <div class="profile-avatar-container" id="profile-avatar-container">
-              <span>U</span>
-            </div>
-            
-            <div class="profile-info">
-              <div class="profile-name">
-                <span id="profile-name">Carregando...</span>
-                <span class="role-tag" id="profile-role-tag">USUÁRIO</span>
-                <span id="profile-vip-tag" class="badge-vip hidden"><i class="fa-solid fa-crown"></i> VIP PREMIUM</span>
-                <button class="btn btn-outline" style="width: auto; padding: 6px 12px; font-size: 12px; display: inline-flex;" onclick="abrirModalEdicaoBio()">
-                  <i class="fa-solid fa-pen-to-square"></i> Editar Biografia
-                </button>
-                <label for="avatar-file-input" class="btn btn-blue" style="width: auto; padding: 6px 12px; font-size: 12px; display: inline-flex; cursor: pointer; margin-top: 0;">
-                  <i class="fa-solid fa-camera"></i> Alterar Foto (MinIO)
-                </label>
-                <input type="file" id="avatar-file-input" accept="image/*" class="hidden" onchange="fazerUploadFotoPerfil(event)">
-              </div>
-
-              <!-- E-mail Real do Usuário (Atende solicitação do usuário) -->
-              <div class="profile-email-badge">
-                <i class="fa-solid fa-envelope"></i>
-                <span id="profile-email-display">usuario@email.com</span>
-              </div>
-
-              <!-- Biografia -->
-              <div class="profile-bio-box">
-                <div>
-                  <strong style="font-size: 12px; color: var(--text-dim); text-transform: uppercase; display: block; margin-bottom: 4px;">
-                    <i class="fa-solid fa-quote-left"></i> Biografia Cinematográfica
-                  </strong>
-                  <span id="profile-bio-text">Carregando biografia...</span>
-                </div>
-              </div>
+    <!-- ABA 2: CATÁLOGO DE SERVIÇOS (CRUD PROFISSIONAL/ADMIN + UPLOAD FOTO MINIO) -->
+    <div id="abaServicos" class="hidden">
+      <div class="card" id="boxCriarServico" style="margin-bottom:24px;">
+        <h3 style="margin-bottom:12px;"><i class="fa-solid fa-plus-circle" style="color:#f59e0b;"></i> Cadastrar Novo Serviço no Catálogo (Papel Profissional / Admin)</h3>
+        <div class="grid-3">
+          <div>
+            <label>Nome do Serviço</label>
+            <input type="text" id="servNome" class="input" placeholder="Ex: Corte Degradê + Sobrancelha">
+          </div>
+          <div>
+            <label>Categoria</label>
+            <input type="text" id="servCat" class="input" value="Corte & Barba">
+          </div>
+          <div>
+            <label>Preço (R$) e Duração (min)</label>
+            <div style="display:flex; gap:8px;">
+              <input type="number" id="servPreco" class="input" value="55.00" step="0.50">
+              <input type="number" id="servDuracao" class="input" value="45">
             </div>
           </div>
         </div>
+        <label>Descrição Técnica do Procedimento</label>
+        <input type="text" id="servDesc" class="input" placeholder="Detalhe o ritual, produtos utilizados e acabamento.">
+        <button onclick="criarServico()" class="btn btn-amber"><i class="fa-solid fa-floppy-disk"></i> Publicar Serviço no Catálogo</button>
+      </div>
 
-        <!-- Estatísticas Sociais & Plano -->
-        <div class="profile-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-          <div class="stat-card">
-            <i class="fa-solid fa-heart" style="color: var(--accent);"></i>
-            <div class="val" id="profile-stat-favs">0</div>
-            <div class="lbl">Filmes Favoritados</div>
-          </div>
-          <div class="stat-card">
-            <i class="fa-solid fa-comments" style="color: var(--accent-blue);"></i>
-            <div class="val" id="profile-stat-comms">0</div>
-            <div class="lbl">Comentários Postados</div>
-          </div>
-          <div class="stat-card">
-            <i class="fa-solid fa-crown" style="color: var(--accent-gold);"></i>
-            <div class="val" id="profile-stat-plan" style="font-size: 16px; margin-top: 6px; color: #f59e0b;">Gratuito</div>
-            <div class="lbl" id="profile-stat-plan-lbl">Limite: 3 Favoritos</div>
-            <div id="profile-plan-actions" style="margin-top: 10px;"></div>
-          </div>
-          <div class="stat-card">
-            <i class="fa-solid fa-cloud-arrow-up" style="color: var(--accent-green);"></i>
-            <div class="val" style="font-size: 16px; margin-top: 6px; color: #10b981;">MinIO Storage</div>
-            <div class="lbl">Fotos em Objeto S3</div>
+      <div class="grid-3" id="listaServicosApp"></div>
+    </div>
+
+    <!-- ABA 3: ASSINATURA STRIPE & PORTAL DO CLIENTE -->
+    <div id="abaAssinatura" class="hidden">
+      <div class="grid-2">
+        <div class="card card-pro">
+          <span class="badge badge-pro">STRIPE SUBSCRIPTIONS (TEST MODE)</span>
+          <h3 style="font-size:22px; margin-top:10px;">Gerenciamento de Plano & Cobrança</h3>
+          <p style="font-size:13px; color:#94a3b8; margin:10px 0 18px;">
+            Nenhum número de cartão passa pelo nosso banco de dados. Toda cobrança recorrente acontece via Stripe Checkout (<code>mode=subscription</code>) e Webhooks assinados com idempotência.
+          </p>
+          <div id="detalhesAssinaturaUsuario" style="background:#0b1120; padding:16px; border-radius:10px; border:1px solid #1f2937; margin-bottom:18px; font-size:13px; line-height:1.8;"></div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <button onclick="iniciarAssinaturaPro()" class="btn btn-amber"><i class="fa-solid fa-credit-card"></i> Assinar Plano Pro (R$ 29,90/mês)</button>
+            <button onclick="abrirBillingPortal()" class="btn btn-outline"><i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir Portal do Cliente (Trocar / Cancelar)</button>
           </div>
         </div>
 
-        <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 16px;">
-          <i class="fa-solid fa-heart" style="color: var(--accent);"></i> Minha Galeria de Favoritos
-        </h3>
-        <div id="profile-favs-list" class="movies-grid"></div>
-      </section>
+        <div class="card">
+          <h3 style="margin-bottom:12px;"><i class="fa-solid fa-satellite-dish" style="color:#10b981;"></i> Simulador dos 4 Eventos de Webhook do Stripe (Atividade 11)</h3>
+          <p style="font-size:12px; color:#94a3b8; margin-bottom:14px;">
+            Dispare eventos assinados criptograficamente (<code>Stripe-Signature</code> HMAC-SHA256) para testar o ciclo de vida completo da assinatura e a idempotência:
+          </p>
+          <div style="display:grid; gap:10px;">
+            <button onclick="simularWebhookStripe('checkout.session.completed')" class="btn btn-outline" style="justify-content:space-between;">
+              <span>1. <code>checkout.session.completed</code> (Ativa Plano Pro)</span>
+              <span class="badge badge-pro">ATIVAR PRO</span>
+            </button>
+            <button onclick="simularWebhookStripe('customer.subscription.updated')" class="btn btn-outline" style="justify-content:space-between;">
+              <span>2. <code>customer.subscription.updated</code> (Renova/Atualiza Plano)</span>
+              <span class="badge badge-role">UPDATED</span>
+            </button>
+            <button onclick="simularWebhookStripe('invoice.payment_failed')" class="btn btn-outline" style="justify-content:space-between;">
+              <span>3. <code>invoice.payment_failed</code> (Marca Inadimplente / Free)</span>
+              <span class="badge" style="background:#7c2d12; color:#fed7aa;">PAST_DUE</span>
+            </button>
+            <button onclick="simularWebhookStripe('customer.subscription.deleted')" class="btn btn-outline" style="justify-content:space-between;">
+              <span>4. <code>customer.subscription.deleted</code> (Cancela e Volta p/ Free)</span>
+              <span class="badge" style="background:#7f1d1d; color:#fecaca;">CANCELED</span>
+            </button>
+          </div>
+          <pre id="webhookResultadoBox" style="background:#050811; border:1px solid #1e293b; border-radius:8px; padding:12px; font-size:11px; color:#38bdf8; margin-top:14px; overflow-x:auto;">Aguardando disparo de evento webhook...</pre>
+        </div>
+      </div>
+    </div>
 
-      <!-- ABA 3: MEUS FAVORITOS -->
-      <section id="tab-content-favoritos" class="hidden">
-        <div id="favs-list" class="movies-grid"></div>
-      </section>
-
-      <!-- ABA 4: COMENTÁRIOS DA COMUNIDADE -->
-      <section id="tab-content-comentarios" class="hidden">
-        <div id="comments-list" class="comments-list"></div>
-      </section>
-
-      <!-- ABA 5: PAINEL DE ADMINISTRAÇÃO & AUDITORIA REDIS -->
-      <section id="tab-content-admin" class="hidden">
-        <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 14px;">
-          <i class="fa-solid fa-users-gear" style="color: var(--accent-gold);"></i> Usuários Cadastrados
-        </h3>
-        <div class="admin-table-container">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>E-mail</th>
-                <th>Papel (RBAC)</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="users-table-body"></tbody>
-          </table>
+    <!-- ABA 4: PERFIL DO USUÁRIO & MINIO S3 -->
+    <div id="abaPerfil" class="hidden">
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-bottom:14px;"><i class="fa-solid fa-id-badge" style="color:#f59e0b;"></i> Meu Perfil BarberCloud</h3>
+          <div style="display:flex; align-items:center; gap:18px; margin-bottom:18px;">
+            <img id="imgAvatarPerfil" src="https://ui-avatars.com/api/?name=BC&background=f59e0b&color=090d16" style="width:76px; height:76px; border-radius:50%; object-fit:cover; border:2px solid #f59e0b;">
+            <div>
+              <div id="perfilNomeDisplay" style="font-size:18px; font-weight:800;"></div>
+              <div id="perfilEmailDisplay" style="font-size:13px; color:#94a3b8;"></div>
+              <div id="perfilChaveMinio" style="font-size:11px; color:#38bdf8; margin-top:4px;"></div>
+            </div>
+          </div>
+          <label>Nome de Exibição</label>
+          <input type="text" id="inputPerfilNome" class="input">
+          <label>Biografia / Especialidade</label>
+          <textarea id="inputPerfilBio" class="input" rows="3"></textarea>
+          <button onclick="salvarPerfil()" class="btn btn-amber">Salvar Dados do Perfil</button>
         </div>
 
-        <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 14px; margin-top: 40px;">
-          <i class="fa-solid fa-list-check" style="color: #ef4444;"></i> Logs de Auditoria (Redis Streams)
-        </h3>
-        <div class="admin-table-container">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Data/Hora</th>
-                <th>Ação</th>
-                <th>Usuário</th>
-                <th>Detalhes</th>
-                <th>IP</th>
-              </tr>
-            </thead>
-            <tbody id="logs-table-body"></tbody>
-          </table>
+        <div class="card">
+          <h3 style="margin-bottom:14px;"><i class="fa-solid fa-cloud-arrow-up" style="color:#38bdf8;"></i> Upload de Avatar no MinIO Object Storage</h3>
+          <p style="font-size:13px; color:#94a3b8; margin-bottom:14px;">
+            O arquivo binário da imagem (até 5 MB) é salvo no bucket S3 <code>perfil-fotos</code> do MinIO e apenas a chave é gravada no MariaDB.
+          </p>
+          <input type="file" id="inputFotoPerfil" class="input" accept="image/*">
+          <button onclick="enviarFotoPerfil()" class="btn btn-amber"><i class="fa-solid fa-upload"></i> Enviar Foto para o MinIO S3</button>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
+
+    <!-- ABA 5: PAINEL ADMIN SAAS (MRR, PLANOS, ASSINATURAS E EVENTOS REDIS) -->
+    <div id="abaAdmin" class="hidden">
+      <div class="grid-3" style="margin-bottom:24px;">
+        <div class="card card-pro">
+          <div style="font-size:12px; color:#94a3b8; font-weight:700;">MRR DE TESTE (RECEITA RECORRENTE MENSAL)</div>
+          <div class="stat-number" id="adminMrrValor">R$ 0,00</div>
+          <div style="font-size:12px; color:#cbd5e1; margin-top:6px;" id="adminArrSub">ARR Projetado: R$ 0,00/ano</div>
+        </div>
+        <div class="card">
+          <div style="font-size:12px; color:#94a3b8; font-weight:700;">USUÁRIOS POR PLANO (FREE VS PRO)</div>
+          <div class="stat-number" style="color:#38bdf8;" id="adminPlanosCount">0 Free / 0 Pro</div>
+          <div style="font-size:12px; color:#cbd5e1; margin-top:6px;" id="adminAssinaturasAtivas">0 assinaturas Pro ativas</div>
+        </div>
+        <div class="card">
+          <div style="font-size:12px; color:#94a3b8; font-weight:700;">OPERAÇÃO & WEBHOOKS IDEMPOTENTES</div>
+          <div class="stat-number" style="color:#10b981;" id="adminOperacaoCount">0 Agendamentos</div>
+          <div style="font-size:12px; color:#cbd5e1; margin-top:6px;" id="adminWebhooksCount">0 webhooks processados</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:24px;">
+        <h3 style="margin-bottom:14px;"><i class="fa-solid fa-users-gear"></i> Gestão de Contas, Papéis RBAC e Planos</h3>
+        <div id="tabelaUsuariosAdmin"></div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom:14px;"><i class="fa-solid fa-bolt" style="color:#ef4444;"></i> Últimos Eventos de Negócio no Redis Streams (`log-service`)</h3>
+        <div id="tabelaLogsAdmin"></div>
+      </div>
+    </div>
   </div>
 
   <script>
-    let usuarioAtual = null;
-    let todosFilmes = [];
-    let favoritosSet = new Set();
-    let mapaFilmes = {};
-    let pendenteEmailAuth = '';
+    let usuarioLogado = null;
+    let emailTempAuth = '';
 
-    // Notificações Toast
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-      toast.className = `toast ${type}`;
-      
-      let icon = '<i class="fa-solid fa-circle-info" style="color: var(--accent-blue);"></i>';
-      if (type === 'success') icon = '<i class="fa-solid fa-circle-check" style="color: var(--accent-green);"></i>';
-      if (type === 'error') icon = '<i class="fa-solid fa-circle-exclamation" style="color: var(--accent);"></i>';
-
-      toast.innerHTML = `${icon} <span>${message}</span>`;
-      container.appendChild(toast);
-
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
-      }, 4500);
+    function toast(msg, erro = false) {
+      const el = document.createElement('div');
+      el.className = 'toast';
+      if (erro) { el.style.background = '#ef4444'; el.style.color = '#fff'; }
+      el.textContent = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 4000);
     }
 
-    function abrirModal(id) {
-      document.getElementById(id).classList.remove('hidden');
+    function abrirModalAuth(aba) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      alternarAbaAuth(aba);
     }
 
-    function fecharModal(id) {
-      document.getElementById(id).classList.add('hidden');
+    function alternarAbaAuth(aba) {
+      document.getElementById('formLogin').classList.toggle('hidden', aba !== 'login');
+      document.getElementById('formRegister').classList.toggle('hidden', aba !== 'register');
+      document.getElementById('form2FA').classList.add('hidden');
+      document.getElementById('formVerifyEmail').classList.add('hidden');
+      document.getElementById('tabLoginBtn').className = aba === 'login' ? 'btn btn-amber' : 'btn btn-outline';
+      document.getElementById('tabRegBtn').className = aba === 'register' ? 'btn btn-amber' : 'btn btn-outline';
     }
 
-    function switchAuthTab(tab) {
-      document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
-      const authMsg = document.getElementById('auth-msg');
-      if (authMsg) authMsg.style.display = 'none';
-
-      document.getElementById('auth-tabs-container').classList.remove('hidden');
-      document.getElementById('auth-2fa-step').classList.add('hidden');
-      document.getElementById('auth-verify-email-step').classList.add('hidden');
-
-      if (tab === 'login') {
-        document.getElementById('tab-login').classList.add('active');
-        document.getElementById('login-form').classList.remove('hidden');
-        document.getElementById('register-form').classList.add('hidden');
-      } else {
-        document.getElementById('tab-register').classList.add('active');
-        document.getElementById('login-form').classList.add('hidden');
-        document.getElementById('register-form').classList.remove('hidden');
-      }
-    }
-
-    // Exibir Tela Dedicada de Verificação 2FA
-    function exibirEtapa2FA(email) {
-      pendenteEmailAuth = email;
-      document.getElementById('auth-tabs-container').classList.add('hidden');
-      document.getElementById('login-form').classList.add('hidden');
-      document.getElementById('register-form').classList.add('hidden');
-      document.getElementById('auth-verify-email-step').classList.add('hidden');
-      
-      const step2fa = document.getElementById('auth-2fa-step');
-      step2fa.classList.remove('hidden');
-      document.getElementById('auth-2fa-email-display').innerText = email;
-      
-      const input = document.getElementById('twofa-code');
-      input.value = '';
-      setTimeout(() => input.focus(), 150);
-      
-      showToast('Código de 2 etapas enviado para seu e-mail! 🔐', 'info');
-    }
-
-    // Exibir Tela Dedicada de Ativação de Conta (E-mail Real)
-    function exibirEtapaAtivacaoEmail(email) {
-      pendenteEmailAuth = email;
-      document.getElementById('auth-tabs-container').classList.add('hidden');
-      document.getElementById('login-form').classList.add('hidden');
-      document.getElementById('register-form').classList.add('hidden');
-      document.getElementById('auth-2fa-step').classList.add('hidden');
-      
-      const stepVerif = document.getElementById('auth-verify-email-step');
-      stepVerif.classList.remove('hidden');
-      document.getElementById('auth-verify-email-display').innerText = email;
-      
-      const input = document.getElementById('verify-email-code');
-      input.value = '';
-      setTimeout(() => input.focus(), 150);
-
-      showToast('Código de ativação enviado para seu e-mail! 📩', 'info');
-    }
-
-    // Voltar para a tela de Login
-    function voltarParaLogin() {
-      document.getElementById('auth-tabs-container').classList.remove('hidden');
-      document.getElementById('auth-2fa-step').classList.add('hidden');
-      document.getElementById('auth-verify-email-step').classList.add('hidden');
-      switchAuthTab('login');
-    }
-
-    // ==========================================
-    // FLUXO DE LOGIN & 2FA (Verificação em 2 Etapas)
-    // ==========================================
-    async function login() {
-      const email = document.getElementById('login-email').value.trim();
-      const senha = document.getElementById('login-senha').value;
-      const btn = document.getElementById('btn-login');
-      const authMsg = document.getElementById('auth-msg');
-
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Validando credenciais...';
-      btn.disabled = true;
-      if (authMsg) authMsg.style.display = 'none';
-
+    async function carregarCatalogoPublico() {
       try {
-        const res = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, senha })
-        });
-        const data = await res.json();
+        const res = await fetch('/api/servicos');
+        const servicos = await res.json();
+        const html = servicos.map(s => `
+          <div class="card">
+            ${s.foto_url ? `<img src="${s.foto_url}" style="width:100%; height:150px; object-fit:cover; border-radius:10px; margin-bottom:12px;">` : ''}
+            <span class="badge badge-role">${s.categoria}</span>
+            <h4 style="font-size:17px; margin:10px 0 6px;">${s.nome}</h4>
+            <p style="font-size:13px; color:#94a3b8; margin-bottom:14px;">${s.descricao}</p>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #1f2937; padding-top:12px;">
+              <strong style="font-size:18px; color:#f59e0b;">R$ ${Number(s.preco).toFixed(2).replace('.', ',')}</strong>
+              <span style="font-size:12px; color:#64748b;"><i class="fa-regular fa-clock"></i> ${s.duracao_min} min</span>
+            </div>
+          </div>
+        `).join('');
+        document.getElementById('listaServicosPublico').innerHTML = html;
+      } catch (e) {}
+    }
 
-        if (res.ok) {
-          if (data.require2FA) {
-            // Exibe a tela de Verificação em Duas Etapas (2FA)
-            exibirEtapa2FA(data.email || email);
-          } else {
-            showToast(`Bem-vindo(a), ${data.nome}!`, 'success');
-            carregarDados();
-          }
-        } else if (data.requireVerification) {
-          // Conta pendente de ativação de e-mail
-          exibirEtapaAtivacaoEmail(data.email || email);
-        } else {
-          authMsg.innerText = data.error || 'Credenciais inválidas.';
-          authMsg.style.display = 'block';
-        }
-      } catch (err) {
-        authMsg.innerText = 'Erro ao conectar com o servidor de autenticação.';
-        authMsg.style.display = 'block';
-      } finally {
-        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Acessar com 2FA';
-        btn.disabled = false;
+    async function fazerCadastro() {
+      const nome = document.getElementById('regNome').value;
+      const email = document.getElementById('regEmail').value;
+      const role = document.getElementById('regRole').value;
+      const senha = document.getElementById('regSenha').value;
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email, role, senha })
+      });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error || 'Erro no cadastro', true);
+      emailTempAuth = email;
+      toast(data.message);
+      document.getElementById('formRegister').classList.add('hidden');
+      document.getElementById('formVerifyEmail').classList.remove('hidden');
+    }
+
+    async function confirmarEmail() {
+      const codigo = document.getElementById('inputCodigoEmail').value;
+      const res = await fetch('/api/verify-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailTempAuth, codigo })
+      });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error || 'Código inválido', true);
+      toast(data.message);
+      alternarAbaAuth('login');
+      document.getElementById('loginEmail').value = emailTempAuth;
+    }
+
+    async function fazerLogin() {
+      const email = document.getElementById('loginEmail').value;
+      const senha = document.getElementById('loginSenha').value;
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, senha })
+      });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error || 'Falha no login', true);
+      emailTempAuth = email;
+      if (data.require2FA) {
+        toast('Código 2FA enviado para seu e-mail!');
+        document.getElementById('formLogin').classList.add('hidden');
+        document.getElementById('form2FA').classList.remove('hidden');
+      } else {
+        await verificarSessao();
       }
     }
 
     async function confirmar2FA() {
-      const codigo = document.getElementById('twofa-code').value.trim();
-      const btn = document.getElementById('btn-confirm-2fa');
+      const codigo = document.getElementById('inputCodigo2FA').value;
+      const res = await fetch('/api/verify-2fa', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailTempAuth, codigo })
+      });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error || 'Código 2FA inválido', true);
+      toast('Login 2FA confirmado com sucesso!');
+      await verificarSessao();
+    }
 
-      if (!codigo || codigo.length < 6) {
-        return showToast('Por favor, informe o código de 6 dígitos recebido por e-mail.', 'error');
+    async function verificarSessao() {
+      const res = await fetch('/api/me');
+      if (!res.ok) {
+        document.getElementById('landingPage').classList.remove('hidden');
+        document.getElementById('appDashboard').classList.add('hidden');
+        document.getElementById('navPublic').classList.remove('hidden');
+        document.getElementById('navLogged').classList.add('hidden');
+        return;
+      }
+      usuarioLogado = await res.json();
+      document.getElementById('landingPage').classList.add('hidden');
+      document.getElementById('appDashboard').classList.remove('hidden');
+      document.getElementById('navPublic').classList.add('hidden');
+      document.getElementById('navLogged').classList.remove('hidden');
+
+      document.getElementById('userNameLabel').textContent = usuarioLogado.nome;
+      document.getElementById('userRoleBadge').textContent = `PAPEL: ${usuarioLogado.role.toUpperCase()}`;
+
+      const isPro = usuarioLogado.plano === 'pro' || usuarioLogado.premium;
+      const planBadge = document.getElementById('userPlanBadge');
+      planBadge.textContent = isPro ? '👑 PLANO PRO ATIVO' : '🆓 PLANO FREE';
+      planBadge.className = isPro ? 'badge badge-pro' : 'badge badge-free';
+      document.getElementById('btnUpgradeHeader').classList.toggle('hidden', isPro);
+      document.getElementById('btnAbaAdmin').classList.toggle('hidden', usuarioLogado.role !== 'admin');
+
+      document.getElementById('avisoLimitePlano').textContent = isPro
+        ? '👑 Você é assinante BarberCloud Pro: agendamentos mensais ILIMITADOS liberados!'
+        : `🆓 Plano Free: Você possui ${usuarioLogado.agendamentos_ativos} de 3 agendamentos ativos permitidos.`;
+
+      document.getElementById('resumoAssinaturaCard').textContent = isPro
+        ? `👑 Plano BarberCloud Pro (R$ 29,90/mês) — Status: ${usuarioLogado.assinatura_status.toUpperCase()}`
+        : `🆓 Plano Free (R$ 0,00/mês — Limite de 3 agendamentos ativos)`;
+
+      document.getElementById('detalhesAssinaturaUsuario').innerHTML = `
+        <div><strong>Cliente:</strong> ${usuarioLogado.nome} (${usuarioLogado.email})</div>
+        <div><strong>Papel RBAC:</strong> <code>${usuarioLogado.role}</code></div>
+        <div><strong>Plano Atual:</strong> <strong>${isPro ? '👑 BarberCloud Pro (R$ 29,90/mês)' : '🆓 BarberCloud Free (R$ 0,00/mês)'}</strong></div>
+        <div><strong>Status da Assinatura:</strong> <code>${usuarioLogado.assinatura_status}</code></div>
+        <div><strong>Stripe Customer ID:</strong> <code>${usuarioLogado.stripe_customer_id || 'Será gerado no checkout'}</code></div>
+        <div><strong>Stripe Subscription ID:</strong> <code>${usuarioLogado.stripe_subscription_id || 'Nenhuma assinatura Pro ativa'}</code></div>
+      `;
+
+      document.getElementById('perfilNomeDisplay').textContent = usuarioLogado.nome;
+      document.getElementById('perfilEmailDisplay').textContent = usuarioLogado.email;
+      document.getElementById('perfilChaveMinio').textContent = usuarioLogado.foto_chave ? `Objeto S3 MinIO: ${usuarioLogado.foto_chave}` : 'Sem foto no MinIO';
+      document.getElementById('inputPerfilNome').value = usuarioLogado.nome;
+      document.getElementById('inputPerfilBio').value = usuarioLogado.bio || '';
+      if (usuarioLogado.foto_url) document.getElementById('imgAvatarPerfil').src = usuarioLogado.foto_url;
+
+      await carregarDadosApp();
+    }
+
+    async function carregarDadosApp() {
+      const resServ = await fetch('/api/servicos');
+      const servicos = await resServ.json();
+
+      document.getElementById('selectServicoAgendamento').innerHTML = servicos.map(s =>
+        `<option value="${s.id}">${s.nome} — R$ ${Number(s.preco).toFixed(2)} (${s.duracao_min} min)</option>`
+      ).join('');
+
+      document.getElementById('listaServicosApp').innerHTML = servicos.map(s => `
+        <div class="card">
+          ${s.foto_url ? `<img src="${s.foto_url}" style="width:100%; height:140px; object-fit:cover; border-radius:10px; margin-bottom:10px;">` : ''}
+          <span class="badge badge-role">${s.categoria}</span>
+          <h4 style="margin:8px 0;">${s.nome}</h4>
+          <p style="font-size:12px; color:#94a3b8; margin-bottom:12px;">${s.descricao}</p>
+          <div style="font-size:16px; font-weight:800; color:#f59e0b; margin-bottom:10px;">R$ ${Number(s.preco).toFixed(2).replace('.', ',')} • ${s.duracao_min} min</div>
+          ${['profissional', 'admin'].includes(usuarioLogado.role) ? `
+            <div style="border-top:1px solid #1f2937; padding-top:10px; margin-top:8px;">
+              <label style="font-size:10px;">Foto do Corte no MinIO S3:</label>
+              <input type="file" id="fotoServ_${s.id}" class="input" style="padding:6px;" accept="image/*">
+              <div style="display:flex; gap:6px;">
+                <button onclick="uploadFotoServico(${s.id})" class="btn btn-outline" style="font-size:11px; padding:6px 10px;"><i class="fa-solid fa-camera"></i> Enviar Foto S3</button>
+                <button onclick="excluirServico(${s.id})" class="btn btn-danger" style="font-size:11px; padding:6px 10px;"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+
+      const resAg = await fetch('/api/agendamentos');
+      const agendamentos = await resAg.json();
+
+      if (agendamentos.length === 0) {
+        document.getElementById('listaAgendamentosContainer').innerHTML = `<p style="color:#94a3b8; font-size:13px;">Nenhum agendamento registrado para sua conta.</p>`;
+      } else {
+        document.getElementById('listaAgendamentosContainer').innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Serviço</th>
+                <th>Cliente</th>
+                <th>Data / Hora</th>
+                <th>Valor</th>
+                <th>Status</th>
+                <th>Comprovante MinIO S3</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${agendamentos.map(a => `
+                <tr>
+                  <td>#${a.id}</td>
+                  <td><strong>${a.servico_nome || 'Serviço'}</strong></td>
+                  <td>${a.cliente_nome || usuarioLogado.nome}</td>
+                  <td>${new Date(a.data_hora).toLocaleString('pt-BR')}</td>
+                  <td>R$ ${Number(a.valor_cobrado).toFixed(2).replace('.', ',')}</td>
+                  <td><span class="badge badge-role">${a.status}</span></td>
+                  <td>
+                    ${a.comprovante_url
+                      ? `<a href="${a.comprovante_url}" target="_blank" style="color:#38bdf8; font-weight:700;"><i class="fa-solid fa-file-image"></i> Ver Objeto S3</a>`
+                      : `<input type="file" id="comp_${a.id}" style="font-size:11px; width:150px;" onchange="enviarComprovante(${a.id})">`
+                    }
+                  </td>
+                  <td style="display:flex; gap:6px;">
+                    ${['profissional', 'admin'].includes(usuarioLogado.role) ? `
+                      <button onclick="atualizarStatusAgendamento(${a.id}, 'concluido')" class="btn btn-outline" style="padding:5px 9px; font-size:11px;">Concluir</button>
+                    ` : ''}
+                    <button onclick="cancelarAgendamento(${a.id})" class="btn btn-danger" style="padding:5px 9px; font-size:11px;">Cancelar</button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
       }
 
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Validando 2FA...';
-      btn.disabled = true;
-
-      try {
-        const res = await fetch('/api/verify-2fa', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: pendenteEmailAuth, codigo })
-        });
-        const data = await res.json();
-
-        if (res.ok) {
-          voltarParaLogin();
-          showToast(`Autenticação em 2 etapas confirmada com sucesso! Bem-vindo(a), ${data.nome}! 🎉`, 'success');
-          carregarDados();
-        } else {
-          showToast(data.error || 'Código de 2 etapas incorreto ou expirado.', 'error');
-        }
-      } catch (err) {
-        showToast('Erro ao validar código em duas etapas.', 'error');
-      } finally {
-        btn.innerHTML = '<i class="fa-solid fa-lock-open"></i> Validar e Acessar Minha Conta';
-        btn.disabled = false;
+      if (usuarioLogado.role === 'admin') {
+        await carregarPainelAdminSaaS();
       }
     }
 
-    // ==========================================
-    // FLUXO DE CADASTRO COM VALIDAÇÃO DE E-MAIL REAL
-    // ==========================================
-    async function cadastrar() {
-      const nome = document.getElementById('reg-nome').value.trim();
-      const email = document.getElementById('reg-email').value.trim();
-      const senha = document.getElementById('reg-senha').value;
-      const role = document.getElementById('reg-role').value;
-      const btn = document.getElementById('btn-register');
-      const authMsg = document.getElementById('auth-msg');
-
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Validando e-mail real...';
-      btn.disabled = true;
-      if (authMsg) authMsg.style.display = 'none';
-
-      try {
-        const res = await fetch('/api/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nome, email, senha, role })
-        });
-        const data = await res.json();
-
-        if (res.ok) {
-          exibirEtapaAtivacaoEmail(data.email || email);
-        } else {
-          authMsg.innerText = data.error || 'Erro ao realizar cadastro.';
-          authMsg.style.display = 'block';
-        }
-      } catch (err) {
-        authMsg.innerText = 'Erro ao processar cadastro no servidor.';
-        authMsg.style.display = 'block';
-      } finally {
-        btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Validar E-mail e Criar Conta';
-        btn.disabled = false;
+    async function criarAgendamento() {
+      const servico_id = document.getElementById('selectServicoAgendamento').value;
+      const data_hora = document.getElementById('inputDataHoraAgendamento').value;
+      const observacoes = document.getElementById('inputObsAgendamento').value;
+      const res = await fetch('/api/agendamentos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ servico_id, data_hora, observacoes })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast(data.error || 'Erro ao agendar', true);
+        return;
       }
+      toast(data.message);
+      await verificarSessao();
     }
 
-    async function confirmarAtivacaoEmail() {
-      const codigo = document.getElementById('verify-email-code').value.trim();
-      const btn = document.getElementById('btn-confirm-verify-email');
-
-      if (!codigo || codigo.length < 6) {
-        return showToast('Digite o código de 6 dígitos que enviamos para o seu e-mail.', 'error');
-      }
-
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Ativando conta...';
-      btn.disabled = true;
-
-      try {
-        const res = await fetch('/api/verify-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: pendenteEmailAuth, codigo })
-        });
-        const data = await res.json();
-
-        if (res.ok) {
-          showToast('Conta ativada com sucesso! Faça seu login para continuar. 🎉', 'success');
-          voltarParaLogin();
-          document.getElementById('login-email').value = pendenteEmailAuth;
-        } else {
-          showToast(data.error || 'Código de ativação incorreto.', 'error');
-        }
-      } catch (err) {
-        showToast('Erro ao validar ativação de e-mail.', 'error');
-      } finally {
-        btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Validar E-mail e Ativar Conta';
-        btn.disabled = false;
-      }
+    async function atualizarStatusAgendamento(id, status) {
+      const res = await fetch(`/api/agendamentos/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error, true);
+      toast(data.message);
+      await carregarDadosApp();
     }
 
-    async function solicitarReenvioCodigo(tipo) {
-      if (!pendenteEmailAuth) return showToast('E-mail não identificado.', 'error');
-      try {
-        const res = await fetch('/api/resend-code', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: pendenteEmailAuth, tipo })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          showToast('Novo código enviado com sucesso para o seu e-mail!', 'success');
-        } else {
-          showToast(data.error || 'Erro ao reenviar código.', 'error');
-        }
-      } catch (err) {
-        showToast('Erro de comunicação.', 'error');
-      }
+    async function cancelarAgendamento(id) {
+      const res = await fetch(`/api/agendamentos/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error, true);
+      toast(data.message);
+      await verificarSessao();
     }
 
-    async function enviarRecuperacao() {
-      const email = document.getElementById('forgot-email').value.trim();
-      const btn = document.getElementById('btn-forgot-send');
-      if (!email) return showToast('Informe o seu e-mail cadastrado.', 'error');
+    async function enviarComprovante(agendamentoId) {
+      const fileInput = document.getElementById(`comp_${agendamentoId}`);
+      if (!fileInput.files[0]) return;
+      const formData = new FormData();
+      formData.append('arquivo', fileInput.files[0]);
+      const res = await fetch(`/api/agendamentos/${agendamentoId}/comprovante`, {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error, true);
+      toast(data.message);
+      await carregarDadosApp();
+    }
 
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando link...';
-      btn.disabled = true;
+    async function criarServico() {
+      const nome = document.getElementById('servNome').value;
+      const categoria = document.getElementById('servCat').value;
+      const preco = document.getElementById('servPreco').value;
+      const duracao_min = document.getElementById('servDuracao').value;
+      const descricao = document.getElementById('servDesc').value;
+      const res = await fetch('/api/servicos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, categoria, preco, duracao_min, descricao })
+      });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error, true);
+      toast(data.message);
+      await carregarDadosApp();
+    }
 
-      try {
-        const res = await fetch('/api/forgot-password', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          showToast(data.message || 'Link de recuperação enviado com sucesso!', 'success');
-          fecharModal('forgot-modal');
-        } else {
-          showToast(data.error || 'Erro ao solicitar recuperação.', 'error');
-        }
-      } catch (err) {
-        showToast('Erro de conexão.', 'error');
-      } finally {
-        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Link de Recuperação';
-        btn.disabled = false;
-      }
+    async function uploadFotoServico(id) {
+      const input = document.getElementById(`fotoServ_${id}`);
+      if (!input.files[0]) return toast('Selecione uma imagem primeiro', true);
+      const fd = new FormData();
+      fd.append('foto', input.files[0]);
+      const res = await fetch(`/api/servicos/${id}/foto`, { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error, true);
+      toast(data.message);
+      await carregarDadosApp();
+    }
+
+    async function excluirServico(id) {
+      const res = await fetch(`/api/servicos/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error, true);
+      toast(data.message);
+      await carregarDadosApp();
+    }
+
+    async function iniciarAssinaturaPro() {
+      const res = await fetch('/api/subscriptions/checkout', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error, true);
+      window.location.href = data.checkoutUrl;
+    }
+
+    async function abrirBillingPortal() {
+      const res = await fetch('/api/billing/portal', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error, true);
+      window.location.href = data.portalUrl;
+    }
+
+    async function simularWebhookStripe(eventType) {
+      const signRes = await fetch('/api/stripe-test/sign-webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event_type: eventType })
+      });
+      const { payload, stripeSignature } = await signRes.json();
+
+      const webhookRes = await fetch('/api/webhooks/stripe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Stripe-Signature': stripeSignature
+        },
+        body: JSON.stringify(payload)
+      });
+      const result = await webhookRes.json();
+      document.getElementById('webhookResultadoBox').textContent = JSON.stringify(result, null, 2);
+      toast(`Webhook ${eventType} processado com sucesso!`);
+      await verificarSessao();
+    }
+
+    async function salvarPerfil() {
+      const nome = document.getElementById('inputPerfilNome').value;
+      const bio = document.getElementById('inputPerfilBio').value;
+      const res = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, bio })
+      });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error, true);
+      toast(data.message);
+      await verificarSessao();
+    }
+
+    async function enviarFotoPerfil() {
+      const input = document.getElementById('inputFotoPerfil');
+      if (!input.files[0]) return toast('Selecione uma foto', true);
+      const fd = new FormData();
+      fd.append('foto', input.files[0]);
+      const res = await fetch('/api/profile/upload-photo', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error, true);
+      toast(data.message);
+      await verificarSessao();
+    }
+
+    async function carregarPainelAdminSaaS() {
+      const res = await fetch('/api/admin/saas-metrics');
+      if (!res.ok) return;
+      const m = await res.json();
+
+      document.getElementById('adminMrrValor').textContent = m.mrr_formatado;
+      document.getElementById('adminArrSub').textContent = `ARR Projetado: R$ ${m.arr_projetado.toFixed(2).replace('.', ',')} / ano`;
+      document.getElementById('adminPlanosCount').textContent = `${m.usuarios_por_plano.free} Free / ${m.usuarios_por_plano.pro} Pro`;
+      document.getElementById('adminAssinaturasAtivas').textContent = `${m.assinaturas.ativas} assinaturas Pro ativas • ${m.assinaturas.inadimplentes_past_due} past_due`;
+      document.getElementById('adminOperacaoCount').textContent = `${m.operacao_dominio.agendamentos_totais} Agendamentos`;
+      document.getElementById('adminWebhooksCount').textContent = `${m.operacao_dominio.webhooks_processados_idempotentes} webhooks Stripe idempotentes`;
+
+      const uRes = await fetch('/api/users');
+      const users = await uRes.json();
+      document.getElementById('tabelaUsuariosAdmin').innerHTML = `
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Nome</th><th>E-mail</th><th>Papel RBAC</th><th>Plano SaaS</th><th>Status Stripe</th><th>Alterar Papel</th></tr>
+          </thead>
+          <tbody>
+            ${users.map(u => `
+              <tr>
+                <td>#${u.id}</td>
+                <td><strong>${u.nome}</strong></td>
+                <td>${u.email}</td>
+                <td><span class="badge badge-role">${u.role}</span></td>
+                <td><span class="badge ${u.plano === 'pro' ? 'badge-pro' : 'badge-free'}">${u.plano.toUpperCase()}</span></td>
+                <td><code>${u.assinatura_status}</code></td>
+                <td>
+                  <select onchange="alterarPapelUsuario(${u.id}, this.value)" style="margin:0; padding:4px 8px; width:auto;">
+                    <option value="cliente" ${u.role === 'cliente' ? 'selected' : ''}>cliente</option>
+                    <option value="profissional" ${u.role === 'profissional' ? 'selected' : ''}>profissional</option>
+                    <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>admin</option>
+                  </select>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+
+      document.getElementById('tabelaLogsAdmin').innerHTML = `
+        <table>
+          <thead><tr><th>Horário</th><th>Evento de Negócio</th><th>Usuário</th><th>Detalhes (Redis Stream)</th></tr></thead>
+          <tbody>
+            ${(m.ultimos_eventos_negocio || []).slice(0, 12).map(l => `
+              <tr>
+                <td>${new Date(l.timestamp).toLocaleTimeString('pt-BR')}</td>
+                <td><span class="badge badge-role">${l.acao}</span></td>
+                <td>${l.usuario_nome || '#' + l.usuario_id}</td>
+                <td><code style="font-size:11px; color:#94a3b8;">${JSON.stringify(l.detalhes || {})}</code></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    async function alterarPapelUsuario(id, role) {
+      const res = await fetch(`/api/users/${id}/role`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role })
+      });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error, true);
+      toast(data.message);
+      await carregarPainelAdminSaaS();
+    }
+
+    function mostrarAbaApp(idAba) {
+      ['abaAgendamentos', 'abaServicos', 'abaAssinatura', 'abaPerfil', 'abaAdmin'].forEach(id => {
+        document.getElementById(id).classList.toggle('hidden', id !== idAba);
+      });
     }
 
     async function logout() {
       await fetch('/api/logout', { method: 'POST' });
-      location.reload();
+      usuarioLogado = null;
+      await verificarSessao();
     }
 
-    // ==========================================
-    // CARREGAMENTO DE DADOS & SESSÃO PRINCIPAL
-    // ==========================================
-    async function carregarDados() {
-      try {
-        const meRes = await fetch('/api/me');
-        if (!meRes.ok) {
-          document.getElementById('auth-section').classList.remove('hidden');
-          document.getElementById('app-section').classList.add('hidden');
-          return;
-        }
-
-        usuarioAtual = await meRes.json();
-        document.getElementById('auth-section').classList.add('hidden');
-        document.getElementById('app-section').classList.remove('hidden');
-
-        // Atualiza Navbar
-        document.getElementById('user-display').innerText = usuarioAtual.nome;
-        const roleBadge = document.getElementById('role-display');
-        roleBadge.innerText = (usuarioAtual.role || 'usuario').toUpperCase();
-        roleBadge.className = `role-tag ${usuarioAtual.role || 'usuario'}`;
-
-        // Selos e status VIP / Premium
-        const vipNavBadge = document.getElementById('vip-badge-display');
-        const navPremiumBtn = document.getElementById('nav-premium-btn');
-        const profileVipTag = document.getElementById('profile-vip-tag');
-
-        if (usuarioAtual.is_premium) {
-          if (vipNavBadge) vipNavBadge.classList.remove('hidden');
-          if (profileVipTag) profileVipTag.classList.remove('hidden');
-          if (navPremiumBtn) {
-            navPremiumBtn.innerHTML = '<i class="fa-solid fa-crown"></i> VIP Premium';
-            navPremiumBtn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
-          }
-        } else {
-          if (vipNavBadge) vipNavBadge.classList.add('hidden');
-          if (profileVipTag) profileVipTag.classList.add('hidden');
-          if (navPremiumBtn) {
-            navPremiumBtn.innerHTML = '<i class="fa-solid fa-crown"></i> Seja Premium';
-            navPremiumBtn.style.background = '';
-          }
-        }
-
-        if (usuarioAtual.foto_url) {
-          document.getElementById('user-avatar-slot').innerHTML = `<img src="${usuarioAtual.foto_url}?t=${Date.now()}" class="user-avatar-img" alt="Foto">`;
-        } else {
-          document.getElementById('user-avatar-slot').innerText = usuarioAtual.nome.charAt(0).toUpperCase();
-        }
-
-        // Se for admin, exibe aba de administração
-        const adminTab = document.getElementById('tab-btn-admin');
-        if (usuarioAtual.role === 'admin') {
-          adminTab.classList.remove('hidden');
-          carregarContadorUsuarios();
-        } else {
-          adminTab.classList.add('hidden');
-        }
-
-        // Verifica retorno do Stripe Checkout via Query Params
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('premium_success') === 'true') {
-          showToast('🎉 Parabéns! Sua assinatura Premium foi confirmada pelo Stripe com sucesso!', 'success');
-          window.history.replaceState({}, document.title, window.location.pathname);
-        } else if (urlParams.get('premium_canceled') === 'true') {
-          showToast('Checkout do Stripe cancelado. Você pode assinar quando quiser!', 'info');
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
-
-        await carregarFavoritos();
-        await carregarFilmes();
-        await carregarComentarios();
-        await carregarPerfil();
-      } catch (err) {
-        document.getElementById('auth-section').classList.remove('hidden');
-        document.getElementById('app-section').classList.add('hidden');
-      }
-    }
-
-    // Navegação entre Abas
-    function mostrarSecao(secao, btn) {
-      document.querySelectorAll('.app-tab-btn').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
-
-      document.getElementById('tab-content-todos').classList.add('hidden');
-      document.getElementById('tab-content-perfil').classList.add('hidden');
-      document.getElementById('tab-content-favoritos').classList.add('hidden');
-      document.getElementById('tab-content-comentarios').classList.add('hidden');
-      document.getElementById('tab-content-admin').classList.add('hidden');
-
-      const searchContainer = document.getElementById('search-container');
-
-      if (secao === 'todos') {
-        document.getElementById('tab-content-todos').classList.remove('hidden');
-        searchContainer.classList.remove('hidden');
-      } else if (secao === 'perfil') {
-        document.getElementById('tab-content-perfil').classList.remove('hidden');
-        searchContainer.classList.add('hidden');
-        carregarPerfil();
-      } else if (secao === 'favoritos') {
-        document.getElementById('tab-content-favoritos').classList.remove('hidden');
-        searchContainer.classList.add('hidden');
-        carregarFavoritos();
-      } else if (secao === 'comentarios') {
-        document.getElementById('tab-content-comentarios').classList.remove('hidden');
-        searchContainer.classList.add('hidden');
-        carregarComentarios();
-      } else if (secao === 'admin') {
-        document.getElementById('tab-content-admin').classList.remove('hidden');
-        searchContainer.classList.add('hidden');
-        carregarUsuariosAdmin();
-        carregarLogsAuditoria();
-      }
-    }
-
-    // ==========================================
-    // PERFIL SOCIAL DO USUÁRIO & MINIO
-    // ==========================================
-    async function carregarPerfil() {
-      try {
-        const res = await fetch('/api/profile');
-        if (!res.ok) return;
-        const perfil = await res.json();
-
-        // Nome & E-mail Real
-        document.getElementById('profile-name').innerText = perfil.nome || usuarioAtual.nome;
-        document.getElementById('profile-email-display').innerText = perfil.email || usuarioAtual.email;
-        
-        const roleTag = document.getElementById('profile-role-tag');
-        roleTag.innerText = (perfil.role || 'usuario').toUpperCase();
-        roleTag.className = `role-tag ${perfil.role || 'usuario'}`;
-
-        // Status do Plano
-        const statPlan = document.getElementById('profile-stat-plan');
-        const statPlanLbl = document.getElementById('profile-stat-plan-lbl');
-        const planActions = document.getElementById('profile-plan-actions');
-        const profileVipTag = document.getElementById('profile-vip-tag');
-
-        if (perfil.is_premium) {
-          if (profileVipTag) profileVipTag.classList.remove('hidden');
-          statPlan.innerHTML = '<span style="color: #f59e0b; font-weight: 800;"><i class="fa-solid fa-crown"></i> VIP Premium</span>';
-          statPlanLbl.innerText = 'Favoritos Ilimitados';
-          planActions.innerHTML = `<button class="btn btn-outline" style="font-size: 11px; padding: 4px 8px; width: auto; color: #f87171; border-color: rgba(239,68,68,0.4);" onclick="cancelarAssinatura()">Cancelar Assinatura</button>`;
-        } else {
-          if (profileVipTag) profileVipTag.classList.add('hidden');
-          statPlan.innerHTML = '<span style="color: #94a3b8; font-weight: 700;">Gratuito</span>';
-          statPlanLbl.innerText = 'Limite: 3 Favoritos';
-          planActions.innerHTML = `<button class="btn btn-primary" style="font-size: 11px; padding: 5px 10px; width: auto; background: linear-gradient(135deg, #f59e0b, #d97706); color: #0b0f19; font-weight: 800; border: none;" onclick="abrirModal('premium-modal')"><i class="fa-solid fa-crown"></i> Fazer Upgrade</button>`;
-        }
-
-        document.getElementById('profile-bio-text').innerText = perfil.bio || 'Adorador de cinema e dos grandes clássicos de Tom Hanks!';
-        document.getElementById('profile-stat-favs').innerText = perfil.total_favoritos || 0;
-        document.getElementById('profile-stat-comms').innerText = perfil.total_comentarios || 0;
-
-        // Avatar do MinIO
-        const avatarContainer = document.getElementById('profile-avatar-container');
-        if (perfil.foto_url) {
-          avatarContainer.innerHTML = `<img src="${perfil.foto_url}?t=${Date.now()}" class="profile-avatar-img" alt="Foto de perfil">`;
-        } else {
-          avatarContainer.innerHTML = `<span>${(perfil.nome || 'U').charAt(0).toUpperCase()}</span>`;
-        }
-
-        // Galeria de Favoritos no Perfil
-        const favsContainer = document.getElementById('profile-favs-list');
-        if (!perfil.favoritos || perfil.favoritos.length === 0) {
-          favsContainer.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-muted);">
-              <i class="fa-regular fa-heart" style="font-size: 36px; margin-bottom: 12px; color: var(--text-dim); display: block;"></i>
-              Você ainda não favoritou nenhum filme. Explore o catálogo e salve seus favoritos!
-            </div>
-          `;
-        } else {
-          favsContainer.innerHTML = perfil.favoritos.map(f => {
-            const posterUrl = f.poster_path ? `https://image.tmdb.org/t/p/w500${f.poster_path}` : 'https://via.placeholder.com/500x750/1e293b/94a3b8?text=Sem+Poster';
-            return `
-              <div class="movie-card">
-                <div class="poster-container">
-                  <img src="${posterUrl}" alt="${f.titulo}" loading="lazy" />
-                </div>
-                <div class="movie-body">
-                  <h4 class="movie-title">${f.titulo}</h4>
-                  <div class="card-actions">
-                    <button class="btn-fav active" style="cursor: default;">
-                      <i class="fa-solid fa-heart"></i> Favorito
-                    </button>
-                  </div>
-                </div>
-              </div>
-            `;
-          }).join('');
-        }
-      } catch (err) {
-        console.error('Erro ao carregar perfil:', err);
-      }
-    }
-
-    function abrirModalEdicaoBio() {
-      document.getElementById('edit-profile-name').value = document.getElementById('profile-name').innerText;
-      document.getElementById('edit-profile-bio').value = document.getElementById('profile-bio-text').innerText;
-      abrirModal('edit-bio-modal');
-    }
-
-    async function salvarBiografia() {
-      const nome = document.getElementById('edit-profile-name').value.trim();
-      const bio = document.getElementById('edit-profile-bio').value.trim();
-      const btn = document.getElementById('btn-save-bio');
-
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...';
-      btn.disabled = true;
-
-      try {
-        const res = await fetch('/api/profile', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nome, bio })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          fecharModal('edit-bio-modal');
-          showToast('Biografia atualizada com sucesso! ✍️', 'success');
-          carregarDados();
-        } else {
-          showToast(data.error || 'Erro ao salvar biografia.', 'error');
-        }
-      } catch (err) {
-        showToast('Erro de comunicação.', 'error');
-      } finally {
-        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Salvar Alterações';
-        btn.disabled = false;
-      }
-    }
-
-    async function fazerUploadFotoPerfil(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      if (file.size > 5 * 1024 * 1024) {
-        return showToast('O arquivo excede o tamanho máximo permitido de 5MB.', 'error');
-      }
-
-      const formData = new FormData();
-      formData.append('foto', file);
-
-      showToast('Enviando imagem para o Object Storage MinIO...', 'info');
-
-      try {
-        const res = await fetch('/api/profile/upload-photo', {
-          method: 'POST',
-          body: formData
-        });
-        const data = await res.json();
-
-        if (res.ok) {
-          showToast('Foto de perfil salva com sucesso no MinIO! 📸', 'success');
-          carregarDados();
-        } else {
-          showToast(data.error || 'Erro ao enviar foto.', 'error');
-        }
-      } catch (err) {
-        showToast('Erro de comunicação ao fazer upload da imagem.', 'error');
-      } finally {
-        event.target.value = '';
-      }
-    }
-
-    // ==========================================
-    // FILMES, FAVORITOS & COMENTÁRIOS
-    // ==========================================
-    async function carregarFilmes() {
-      try {
-        const mRes = await fetch('/api/movies');
-        todosFilmes = await mRes.json();
-        todosFilmes.forEach(f => { mapaFilmes[f.id] = f.title; });
-        document.getElementById('total-movies-badge').innerText = todosFilmes.length;
-        renderizarFilmes(todosFilmes);
-      } catch (err) {
-        document.getElementById('movies-list').innerHTML = `
-          <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
-            Erro ao carregar catálogo de filmes.
-          </div>
-        `;
-      }
-    }
-
-    function filtrarFilmes() {
-      const query = document.getElementById('movie-search').value.toLowerCase().trim();
-      const filtrados = todosFilmes.filter(m => 
-        (m.title && m.title.toLowerCase().includes(query)) ||
-        (m.character && m.character.toLowerCase().includes(query))
-      );
-      renderizarFilmes(filtrados);
-    }
-
-    function renderizarFilmes(filmes) {
-      const container = document.getElementById('movies-list');
-      if (filmes.length === 0) {
-        container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">Nenhum filme encontrado.</div>`;
-        return;
-      }
-
-      container.innerHTML = filmes.map(m => {
-        const isFav = favoritosSet.has(m.id);
-        const posterUrl = m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : 'https://via.placeholder.com/500x750/1e293b/94a3b8?text=Sem+Poster';
-        const ano = m.release_date ? m.release_date.substring(0, 4) : 'N/D';
-        const nota = m.vote_average ? m.vote_average.toFixed(1) : null;
-        const safeTitle = (m.title || '').replace(/'/g, "\\'");
-
-        return `
-          <div class="movie-card">
-            <div class="poster-container">
-              <img src="${posterUrl}" alt="${m.title}" loading="lazy" />
-              ${nota ? `<div class="rating-badge"><i class="fa-solid fa-star"></i> ${nota}</div>` : ''}
-            </div>
-            <div class="movie-body">
-              <h4 class="movie-title" title="${m.title}">${m.title}</h4>
-              <div class="movie-meta">
-                <span><i class="fa-regular fa-calendar"></i> ${ano}</span>
-                ${m.character ? `<span>• ${m.character.substring(0, 18)}</span>` : ''}
-              </div>
-
-              <div class="card-actions">
-                <button class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFavorito(${m.id}, '${safeTitle}', '${m.poster_path || ''}')">
-                  <i class="fa-${isFav ? 'solid' : 'regular'} fa-heart"></i> ${isFav ? 'Favoritado' : 'Favoritar'}
-                </button>
-                <button class="comment-box-toggle" onclick="toggleCommentBox(${m.id})">
-                  <i class="fa-regular fa-comment-dots"></i> Deixar Comentário
-                </button>
-                <div id="comment-box-${m.id}" class="inline-comment-form">
-                  <textarea id="comm-input-${m.id}" placeholder="Escreva sua opinião..."></textarea>
-                  <button class="btn-send-comment" onclick="enviarComentario(${m.id})">
-                    <i class="fa-solid fa-paper-plane"></i> Publicar
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function toggleCommentBox(id) {
-      const box = document.getElementById(`comment-box-${id}`);
-      box.classList.toggle('open');
-      if (box.classList.contains('open')) {
-        document.getElementById(`comm-input-${id}`).focus();
-      }
-    }
-
-    async function toggleFavorito(tmdb_movie_id, titulo, poster_path) {
-      try {
-        const res = await fetch('/api/favorites', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ tmdb_movie_id, titulo, poster_path })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          showToast(`"${titulo}" adicionado aos seus favoritos! ❤️`, 'success');
-          await carregarFavoritos();
-          filtrarFilmes();
-        } else if (res.status === 403 && data.code === 'UPGRADE_REQUIRED') {
-          showToast(data.error || 'Limite de 3 favoritos atingido! Faça upgrade para o Plano Premium para ter favoritos ilimitados. ⭐', 'error');
-          abrirModal('premium-modal');
-        } else {
-          showToast(data.error || 'Filme já está nos favoritos.', 'info');
-        }
-      } catch (err) {
-        showToast('Erro ao favoritar filme.', 'error');
-      }
-    }
-
-    async function carregarFavoritos() {
-      try {
-        const res = await fetch('/api/favorites');
-        const favs = await res.json();
-        favoritosSet = new Set(favs.map(f => f.tmdb_movie_id));
-        document.getElementById('total-favs-badge').innerText = favs.length;
-
-        const container = document.getElementById('favs-list');
-        if (favs.length === 0) {
-          container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">Nenhum favorito ainda.</div>`;
-          return;
-        }
-
-        container.innerHTML = favs.map(f => {
-          const posterUrl = f.poster_path ? `https://image.tmdb.org/t/p/w500${f.poster_path}` : 'https://via.placeholder.com/500x750/1e293b/94a3b8?text=Sem+Poster';
-          return `
-            <div class="movie-card">
-              <div class="poster-container">
-                <img src="${posterUrl}" alt="${f.titulo}" loading="lazy" />
-              </div>
-              <div class="movie-body">
-                <h4 class="movie-title">${f.titulo}</h4>
-                <div class="card-actions">
-                  <button class="btn-fav active" style="cursor: default;">
-                    <i class="fa-solid fa-heart"></i> Favorito
-                  </button>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-      } catch (err) {}
-    }
-
-    async function enviarComentario(tmdb_movie_id) {
-      const input = document.getElementById(`comm-input-${tmdb_movie_id}`);
-      const texto = input.value.trim();
-      if (!texto) return showToast('Digite um comentário.', 'error');
-
-      try {
-        const res = await fetch('/api/comments', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ tmdb_movie_id, texto })
-        });
-        if (res.ok) {
-          input.value = '';
-          toggleCommentBox(tmdb_movie_id);
-          showToast('Comentário publicado! 💬', 'success');
-          carregarComentarios();
-        } else {
-          showToast('Erro ao comentar.', 'error');
-        }
-      } catch (err) {
-        showToast('Erro de comunicação.', 'error');
-      }
-    }
-
-    async function carregarComentarios() {
-      try {
-        const res = await fetch('/api/comments');
-        const comms = await res.json();
-        document.getElementById('total-comms-badge').innerText = comms.length;
-        const container = document.getElementById('comments-list');
-
-        if (comms.length === 0) {
-          container.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-muted);">Nenhum comentário registrado ainda.</div>`;
-          return;
-        }
-
-        container.innerHTML = comms.map(c => {
-          const nomeFilme = mapaFilmes[c.tmdb_movie_id] || `Filme #${c.tmdb_movie_id}`;
-          const isOwner = usuarioAtual && (usuarioAtual.id === c.usuario_id);
-          const isAdmin = usuarioAtual && (usuarioAtual.role === 'admin');
-
-          let deleteBtnHtml = '';
-          if (isOwner) {
-            deleteBtnHtml = `<button class="btn-delete-comment" onclick="excluirComentario(${c.id})"><i class="fa-solid fa-trash-can"></i> Excluir meu comentário</button>`;
-          } else if (isAdmin) {
-            deleteBtnHtml = `<button class="btn-delete-comment" style="background: rgba(245,158,11,0.2); color: var(--accent-gold); border-color: rgba(245,158,11,0.4);" onclick="excluirComentario(${c.id})"><i class="fa-solid fa-shield-halved"></i> Moderar (Admin)</button>`;
-          }
-
-          const avatarHtml = c.autor_foto_url 
-            ? `<img src="${c.autor_foto_url}" class="user-avatar-img" alt="Avatar">`
-            : (c.autor_nome || 'U').charAt(0).toUpperCase();
-
-          const vipTagHtml = c.autor_is_premium 
-            ? `<span class="badge-vip" style="font-size: 9px; margin-left: 6px;"><i class="fa-solid fa-crown"></i> VIP</span>`
-            : '';
-
-          return `
-            <div class="comment-item">
-              <div class="comment-avatar">${avatarHtml}</div>
-              <div class="comment-content">
-                <div class="comment-header">
-                  <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                    <span class="comment-author-name">${c.autor_nome || 'Usuário'}</span>
-                    ${vipTagHtml}
-                    <span class="comment-movie-tag"><i class="fa-solid fa-film"></i> ${nomeFilme}</span>
-                  </div>
-                  <span class="comment-date">${c.criado_em ? new Date(c.criado_em).toLocaleDateString('pt-BR') : ''}</span>
-                </div>
-                <p class="comment-text">${c.texto}</p>
-                ${deleteBtnHtml}
-              </div>
-            </div>
-          `;
-        }).join('');
-      } catch (err) {}
-    }
-
-    async function excluirComentario(id) {
-      if (!confirm('Deseja excluir este comentário?')) return;
-      try {
-        const res = await fetch(`/api/comments/${id}`, { method: 'DELETE' });
-        const data = await res.json();
-        if (res.ok) {
-          showToast(data.message || 'Comentário excluído!', 'success');
-          carregarComentarios();
-        } else {
-          showToast(data.error || 'Erro ao excluir.', 'error');
-        }
-      } catch (err) {
-        showToast('Erro ao comunicar com o servidor.', 'error');
-      }
-    }
-
-    // ==========================================
-    // STRIPE CHECKOUT & PLANO PREMIUM
-    // ==========================================
-    async function iniciarStripeCheckout() {
-      const btn = document.getElementById('btn-checkout-stripe');
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Criando Checkout Session...';
-      btn.disabled = true;
-
-      try {
-        const res = await fetch('/api/premium/checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        const data = await res.json();
-
-        if (res.ok) {
-          if (data.url) {
-            window.location.href = data.url;
-          } else if (data.simulatedUrl) {
-            window.location.href = data.simulatedUrl;
-          } else {
-            showToast('Sessão de checkout criada.', 'info');
-          }
-        } else {
-          showToast(data.error || 'Erro ao iniciar checkout do Stripe.', 'error');
-        }
-      } catch (err) {
-        showToast('Erro de comunicação com o servidor.', 'error');
-      } finally {
-        btn.innerHTML = '<i class="fa-brands fa-stripe" style="font-size: 20px; margin-right: 6px;"></i> Assinar com Stripe Checkout (R$ 9,90/mês)';
-        btn.disabled = false;
-      }
-    }
-
-    async function cancelarAssinatura() {
-      if (!confirm('Tem certeza que deseja cancelar sua assinatura Premium?')) return;
-      try {
-        const res = await fetch('/api/premium/cancel', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        const data = await res.json();
-        if (res.ok) {
-          showToast(data.message || 'Assinatura Premium cancelada com sucesso.', 'info');
-          await carregarDados();
-        } else {
-          showToast(data.error || 'Erro ao cancelar assinatura.', 'error');
-        }
-      } catch (err) {
-        showToast('Erro de comunicação.', 'error');
-      }
-    }
-
-    // ==========================================
-    // PAINEL DE ADMINISTRAÇÃO & AUDITORIA REDIS
-    // ==========================================
-    async function carregarContadorUsuarios() {
-      try {
-        const res = await fetch('/api/users');
-        if (res.ok) {
-          const users = await res.json();
-          document.getElementById('total-users-badge').innerText = users.length;
-        }
-      } catch (err) {}
-    }
-
-    async function carregarUsuariosAdmin() {
-      const tbody = document.getElementById('users-table-body');
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;"><div class="spinner"></div></td></tr>';
-
-      try {
-        const res = await fetch('/api/users');
-        if (!res.ok) {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #f87171;">Acesso negado.</td></tr>';
-          return;
-        }
-
-        const users = await res.json();
-        document.getElementById('total-users-badge').innerText = users.length;
-
-        tbody.innerHTML = users.map(u => {
-          const isSelf = usuarioAtual && (usuarioAtual.id === u.id);
-          const isUserAdmin = (u.role === 'admin');
-
-          let actionBtn = isSelf 
-            ? '<span style="color: var(--text-dim);">Sua conta</span>'
-            : isUserAdmin
-              ? `<button class="btn btn-outline" style="width: auto; padding: 4px 8px; font-size: 11px;" onclick="alterarPapelUsuario(${u.id}, 'usuario')">Rebaixar a Usuário</button>`
-              : `<button class="btn btn-outline" style="width: auto; padding: 4px 8px; font-size: 11px; color: var(--accent-gold); border-color: rgba(245,158,11,0.4);" onclick="alterarPapelUsuario(${u.id}, 'admin')">Promover a Admin</button>`;
-
-          return `
-            <tr>
-              <td><strong>#${u.id}</strong></td>
-              <td>${u.nome}</td>
-              <td>${u.email}</td>
-              <td><span class="role-tag ${u.role}">${(u.role || 'usuario').toUpperCase()}</span></td>
-              <td>${actionBtn}</td>
-            </tr>
-          `;
-        }).join('');
-      } catch (err) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #f87171;">Erro ao carregar lista.</td></tr>';
-      }
-    }
-
-    async function alterarPapelUsuario(userId, novoPapel) {
-      if (!confirm(`Deseja alterar o papel para "${novoPapel}"?`)) return;
-      try {
-        const res = await fetch(`/api/users/${userId}/role`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ role: novoPapel })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          showToast(`Papel atualizado com sucesso!`, 'success');
-          carregarUsuariosAdmin();
-        } else {
-          showToast(data.error || 'Erro ao alterar papel.', 'error');
-        }
-      } catch (err) {
-        showToast('Erro de comunicação.', 'error');
-      }
-    }
-
-    async function carregarLogsAuditoria() {
-      const tbody = document.getElementById('logs-table-body');
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;"><div class="spinner"></div></td></tr>';
-
-      try {
-        const res = await fetch('/api/admin/logs?limit=50');
-        if (!res.ok) {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #f87171;">Acesso restrito a administradores.</td></tr>';
-          return;
-        }
-
-        const logs = await res.json();
-        if (logs.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Nenhum log registrado ainda.</td></tr>';
-          return;
-        }
-
-        tbody.innerHTML = logs.map(l => {
-          const dataFormatada = l.timestamp ? new Date(l.timestamp).toLocaleString('pt-BR') : '-';
-          const detalhesStr = typeof l.detalhes === 'object' ? JSON.stringify(l.detalhes) : (l.detalhes || '-');
-
-          return `
-            <tr>
-              <td style="font-family: monospace; font-size: 11px; color: var(--text-dim);">${dataFormatada}</td>
-              <td><span class="role-tag admin" style="font-size: 10px;">${l.acao}</span></td>
-              <td><strong>#${l.usuario_id}</strong> ${l.usuario_nome ? `(${l.usuario_nome})` : ''}</td>
-              <td style="font-family: monospace; font-size: 11px; color: #93c5fd; max-width: 300px; word-break: break-all;">${detalhesStr}</td>
-              <td style="font-family: monospace; font-size: 11px; color: var(--text-dim);">${l.ip || '127.0.0.1'}</td>
-            </tr>
-          `;
-        }).join('');
-      } catch (err) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #f87171;">Erro ao carregar logs.</td></tr>';
-      }
-    }
-
-    // Início
-    carregarDados();
+    carregarCatalogoPublico();
+    verificarSessao();
   </script>
 </body>
 </html>

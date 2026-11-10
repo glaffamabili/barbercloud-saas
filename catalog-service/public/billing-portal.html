@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Portal do Cliente (Stripe Billing Portal) — BarberCloud SaaS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background: #090d16; color: #f8fafc; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .portal-card { max-width: 720px; width: 100%; background: #111827; border: 1px solid #1f2937; border-radius: 18px; padding: 36px; box-shadow: 0 25px 50px rgba(0,0,0,0.6); }
+    .pill { background: #635bff; color: #fff; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 99px; display: inline-block; margin-bottom: 14px; }
+    .box { background: #0b1120; border: 1px solid #1e293b; border-radius: 12px; padding: 18px; margin: 16px 0; }
+    .btn { padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; margin-right: 10px; margin-top: 8px; }
+    .btn-pro { background: #f59e0b; color: #090d16; }
+    .btn-cancel { background: rgba(239, 68, 68, 0.18); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+    .btn-back { background: #1e293b; color: #e2e8f0; }
+  </style>
+</head>
+<body>
+  <div class="portal-card">
+    <span class="pill">STRIPE CUSTOMER BILLING PORTAL • MODO DE TESTE</span>
+    <h2 style="font-size:24px;">Gerenciar Assinatura BarberCloud</h2>
+    <p style="font-size:13px; color:#94a3b8; margin-top:6px;">
+      Altere seu plano recorrente ou cancele imediatamente sua assinatura. Toda alteração dispara um webhook assinado (<code>customer.subscription.updated</code> ou <code>customer.subscription.deleted</code>) para o backend.
+    </p>
+
+    <div class="box">
+      <div style="font-size:13px; color:#94a3b8;">Assinatura Vinculada ao Cliente:</div>
+      <div style="font-size:18px; font-weight:800; color:#f59e0b; margin-top:4px;" id="portalPlanoAtual">Carregando...</div>
+      <div style="font-size:12px; color:#64748b; margin-top:6px;">
+        Customer ID: <code id="portalCustomer"></code> • Subscription ID: <code id="portalSub"></code>
+      </div>
+    </div>
+
+    <div>
+      <button class="btn btn-pro" onclick="alterarAssinaturaPortal('customer.subscription.updated', 'pro')">
+        👑 Ativar / Manter Plano Pro (R$ 29,90/mês)
+      </button>
+      <button class="btn btn-cancel" onclick="alterarAssinaturaPortal('customer.subscription.deleted', 'free')">
+        ❌ Cancelar Assinatura Imediatamente (Voltar p/ Free)
+      </button>
+      <a href="/" class="btn btn-back" style="text-decoration:none; display:inline-block;">← Voltar ao BarberCloud</a>
+    </div>
+
+    <pre id="portalStatusMsg" style="background:#050811; border:1px solid #1e293b; border-radius:8px; padding:12px; font-size:11px; color:#10b981; margin-top:18px; display:none;"></pre>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById('portalCustomer').textContent = params.get('customer_id') || 'cus_test';
+    document.getElementById('portalSub').textContent = params.get('subscription_id') || 'sub_test';
+    const plano = params.get('plano') || 'free';
+    document.getElementById('portalPlanoAtual').textContent = plano === 'pro'
+      ? '👑 Plano BarberCloud Pro — R$ 29,90 / mês (Ativo)'
+      : '🆓 Plano BarberCloud Free — R$ 0,00 / mês (Até 3 agendamentos)';
+
+    async function alterarAssinaturaPortal(eventType, planoDestino) {
+      const signRes = await fetch('/api/stripe-test/sign-webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event_type: eventType, plano_destino: planoDestino })
+      });
+      const { payload, stripeSignature } = await signRes.json();
+
+      const webhookRes = await fetch('/api/webhooks/stripe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Stripe-Signature': stripeSignature
+        },
+        body: JSON.stringify(payload)
+      });
+      const resData = await webhookRes.json();
+      const box = document.getElementById('portalStatusMsg');
+      box.style.display = 'block';
+      box.textContent = `Webhook ${eventType} processado com sucesso!\n` + JSON.stringify(resData, null, 2);
+      setTimeout(() => { window.location.href = '/'; }, 1500);
+    }
+  </script>
+</body>
+</html>
