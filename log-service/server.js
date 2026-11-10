@@ -27,22 +27,30 @@ app.use((req, res, next) => {
   next();
 });
 
-// Conexão com Redis
+// Conexão com Redis (com fallback em memória caso o processo Redis local não esteja rodando fora do Docker)
 const REDIS_HOST = process.env.REDIS_HOST || 'redis';
 const REDIS_PORT = parseInt(process.env.REDIS_PORT) || 6379;
 const REDIS_PASSWORD = process.env.REDIS_PASSWORD || undefined;
+
+let redisConnected = false;
+const memoryStreams = [];
 
 const redis = new Redis({
   host: REDIS_HOST,
   port: REDIS_PORT,
   password: REDIS_PASSWORD,
-  retryStrategy: (times) => Math.min(times * 100, 3000),
-  maxRetriesPerRequest: 3,
+  retryStrategy: (times) => (times <= 3 ? Math.min(times * 200, 1000) : null),
+  maxRetriesPerRequest: 1,
   lazyConnect: false
 });
 
-redis.on('connect', () => console.log(`✅ [Log Service] Conectado ao Redis em ${REDIS_HOST}:${REDIS_PORT}`));
-redis.on('error', (err) => console.error('❌ [Log Service] Erro no Redis:', err.message));
+redis.on('connect', () => {
+  redisConnected = true;
+  console.log(`✅ [Log Service] Conectado ao Redis em ${REDIS_HOST}:${REDIS_PORT}`);
+});
+redis.on('error', () => {
+  redisConnected = false;
+});
 
 // 1. Gravar Evento de Auditoria no Redis Streams (XADD)
 app.post('/logs', async (req, res) => {
@@ -57,17 +65,32 @@ app.post('/logs', async (req, res) => {
   const detalhesStr = typeof detalhes === 'object' ? JSON.stringify(detalhes) : String(detalhes || '');
 
   try {
-    const streamId = await redis.xadd(
-      'audit_logs',
-      '*',
-      'usuario_id', String(usuario_id || 'anonimo'),
-      'usuario_nome', String(usuario_nome || 'Anônimo'),
-      'usuario_email', String(usuario_email || 'N/A'),
-      'acao', String(acao),
-      'detalhes', detalhesStr,
-      'ip', String(clientIp),
-      'timestamp', logTimestamp
-    );
+    let streamId = `${Date.now()}-0`;
+    if (redisConnected) {
+      streamId = await redis.xadd(
+        'audit_logs',
+        '*',
+        'usuario_id', String(usuario_id || 'anonimo'),
+        'usuario_nome', String(usuario_nome || 'Anônimo'),
+        'usuario_email', String(usuario_email || 'N/A'),
+        'acao', String(acao),
+        'detalhes', detalhesStr,
+        'ip', String(clientIp),
+        'timestamp', logTimestamp
+      );
+    } else {
+      memoryStreams.unshift({
+        id: streamId,
+        usuario_id: usuario_id || 'anonimo',
+        usuario_nome: usuario_nome || 'Anônimo',
+        usuario_email: usuario_email || 'N/A',
+        acao: String(acao),
+        detalhes: typeof detalhes === 'object' ? detalhes : detalhesStr,
+        ip: String(clientIp),
+        timestamp: logTimestamp
+      });
+      if (memoryStreams.length > 500) memoryStreams.pop();
+    }
 
     metrics.logsRecorded++;
     res.status(200).json({
@@ -88,34 +111,40 @@ app.get('/logs', async (req, res) => {
   const filtroAcao = req.query.acao;
 
   try {
-    const rawLogs = await redis.xrevrange('audit_logs', '+', '-', 'COUNT', limit);
-    metrics.logsQueried++;
+    let logs = [];
+    if (redisConnected) {
+      const rawLogs = await redis.xrevrange('audit_logs', '+', '-', 'COUNT', limit);
+      metrics.logsQueried++;
 
-    let logs = rawLogs.map(([id, fields]) => {
-      const obj = { id };
-      for (let i = 0; i < fields.length; i += 2) {
-        const key = fields[i];
-        const val = fields[i + 1];
-        if (key === 'detalhes') {
-          try {
-            obj[key] = JSON.parse(val);
-          } catch (e) {
+      logs = rawLogs.map(([id, fields]) => {
+        const obj = { id };
+        for (let i = 0; i < fields.length; i += 2) {
+          const key = fields[i];
+          const val = fields[i + 1];
+          if (key === 'detalhes') {
+            try {
+              obj[key] = JSON.parse(val);
+            } catch (e) {
+              obj[key] = val;
+            }
+          } else if (key === 'usuario_id' && val !== 'anonimo') {
+            obj[key] = isNaN(val) ? val : Number(val);
+          } else {
             obj[key] = val;
           }
-        } else if (key === 'usuario_id' && val !== 'anonimo') {
-          obj[key] = isNaN(val) ? val : Number(val);
-        } else {
-          obj[key] = val;
         }
-      }
-      return obj;
-    });
+        return obj;
+      });
+    } else {
+      metrics.logsQueried++;
+      logs = memoryStreams.slice(0, limit);
+    }
 
     if (filtroAcao) {
       logs = logs.filter(l => l.acao && l.acao.toLowerCase() === filtroAcao.toLowerCase());
     }
 
-    res.json(logs);
+    res.json({ logs, total: logs.length });
   } catch (err) {
     console.error('Erro ao consultar logs no Redis:', err);
     res.status(500).json({ error: 'Erro ao consultar eventos no Redis Stream.', details: err.message });

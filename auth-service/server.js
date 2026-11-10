@@ -29,7 +29,9 @@ app.use((req, res, next) => {
   next();
 });
 
-const pool = mysql.createPool({
+const { wrapPoolWithFallback } = require('../db/resilient-pool');
+
+const rawPool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -38,6 +40,7 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10
 });
+const pool = wrapPoolWithFallback(rawPool);
 
 // Helper para envio de logs de auditoria para o Log Service (Redis Streams)
 async function registrarLogAuditoria(dados) {
@@ -414,6 +417,7 @@ app.post('/login', async (req, res) => {
       success: true,
       require2FA: true,
       email: cleanEmail,
+      demoOtp: (!process.env.SMTP_USER || !process.env.SMTP_PASS) ? codigo2FA : undefined,
       message: 'Código de verificação em 2 etapas enviado para o seu e-mail!'
     });
   } catch (err) {

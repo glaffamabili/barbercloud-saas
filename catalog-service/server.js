@@ -44,7 +44,9 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000
 }));
 
-const pool = mysql.createPool({
+const { wrapPoolWithFallback } = require('../db/resilient-pool');
+
+const rawPool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -53,6 +55,7 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10
 });
+const pool = wrapPoolWithFallback(rawPool);
 
 // Configuração do Cliente MinIO (Object Storage S3)
 const MINIO_ENDPOINT = process.env.MINIO_ENDPOINT || 'minio';
@@ -420,6 +423,24 @@ app.post('/api/reset-password', async (req, res) => {
 app.post('/api/logout', (req, res) => {
   req.session = null;
   res.json({ success: true, message: 'Sessão encerrada com sucesso.' });
+});
+
+// Login rápido de demonstração para testar os 3 papéis RBAC e os planos Free vs Pro instantaneamente
+app.post('/api/demo-login', async (req, res) => {
+  const { userId } = req.body;
+  const id = Number(userId) || 1;
+  req.session.userId = id;
+  const user = await obterUsuarioAtual(id);
+  if (!user) return res.status(404).json({ error: 'Conta demo não encontrada.' });
+  registrarLogAuditoria({
+    usuario_id: user.id,
+    usuario_nome: user.nome,
+    usuario_email: user.email,
+    acao: 'LOGIN_SUCESSO',
+    detalhes: { role: user.role, plano: user.plano, modo: 'demo_one_click' },
+    ip: req.ip
+  });
+  res.json({ success: true, user });
 });
 
 app.get('/api/me', exigeLogin, async (req, res) => {

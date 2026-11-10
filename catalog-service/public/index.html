@@ -113,6 +113,15 @@
             <button onclick="fazerLogin()" class="btn btn-amber" style="width:100%; justify-content:center; padding:12px;">
               <i class="fa-solid fa-lock"></i> Entrar com 2FA Seguro
             </button>
+            <div style="border-top:1px solid #1f2937; margin-top:16px; padding-top:12px;">
+              <div style="font-size:11px; color:#94a3b8; font-weight:700; margin-bottom:8px; text-transform:uppercase;">⚡ Entrar com 1 Clique (Contas de Teste):</div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                <button onclick="loginDemo(1)" class="btn btn-outline" style="font-size:11px; padding:7px 10px; justify-content:center;">🛡️ Admin SaaS (MRR)</button>
+                <button onclick="loginDemo(2)" class="btn btn-outline" style="font-size:11px; padding:7px 10px; justify-content:center;">✂️ Barbeiro (Profissional)</button>
+                <button onclick="loginDemo(3)" class="btn btn-outline" style="font-size:11px; padding:7px 10px; justify-content:center;">🆓 Cliente Free (Limite 3)</button>
+                <button onclick="loginDemo(4)" class="btn btn-outline" style="font-size:11px; padding:7px 10px; justify-content:center;">👑 Cliente Pro VIP</button>
+              </div>
+            </div>
           </div>
 
           <div id="form2FA" class="hidden">
@@ -463,10 +472,27 @@
       if (!res.ok) return toast(data.error || 'Falha no login', true);
       emailTempAuth = email;
       if (data.require2FA) {
-        toast('Código 2FA enviado para seu e-mail!');
+        if (data.demoOtp) {
+          document.getElementById('inputCodigo2FA').value = data.demoOtp;
+          toast(`Código 2FA gerado: ${data.demoOtp} (preenchido automaticamente)`);
+        } else {
+          toast('Código 2FA enviado para seu e-mail!');
+        }
         document.getElementById('formLogin').classList.add('hidden');
         document.getElementById('form2FA').classList.remove('hidden');
       } else {
+        await verificarSessao();
+      }
+    }
+
+    async function loginDemo(userId) {
+      const res = await fetch('/api/demo-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      });
+      if (res.ok) {
+        toast('Sessão iniciada com sucesso!');
         await verificarSessao();
       }
     }
